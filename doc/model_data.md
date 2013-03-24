@@ -2,8 +2,15 @@
 A specific of model data structure which mmd.js accepts.
 
 
+## Overview
+* Binary data
+* Little endian
+* UTF16LE or UTF8
+* Consists of Header + Contents
+
+
 ## Format
-We use EBNF-like format.
+We use EBNF-like format to represent model data structure.
 
 * `<x>{3}` means `<x> <x> <x>`
 * `<x>?` means `<x> | ε`
@@ -57,12 +64,13 @@ We use EBNF-like format.
 <rigidNumber>                    ::= <int>
 <jointNumber>                    ::= <int>
 
-<modelHeader>                    ::= <modelName> <modelVersion> <modelInformation>
-<modelName>                      ::= <byte>{4}
-<modelVersion>                   ::= <float>
-<modelInformation>               ::= <isUtf8> <extendedUvIndexSize> <vertexIndexSize> <textureIndexSize> <matrialIndexSize> <boneIndexSize> <morphIndexSize> <rigidIndexSize>
-<isUtf8>                         ::= <boolean>
-<extendedUvIndexSize>            ::= <byte>
+<modelHeader>                    ::= <pmxName> <pmxVersion> <modelStructureInformation>
+<pmxName>                        ::= <byte>{4}
+<pmxVersion>                     ::= <float>
+<modelStructureInformation>      ::= <modelStructureInformationSize> <useUtf8> <addedUvSize> <vertexIndexSize> <textureIndexSize> <matrialIndexSize> <boneIndexSize> <morphIndexSize> <rigidIndexSize>
+<modelStructureInformationSize>  ::= <byte>
+<useUtf8>                        ::= <boolean>
+<addedUvSize>                    ::= <byte>
 <vertexIndexSize>                ::= <byte>
 <textureIndexSize>               ::= <byte>
 <matrialIndexSize>               ::= <byte>
@@ -70,7 +78,9 @@ We use EBNF-like format.
 <morphIndexSize>                 ::= <byte>
 <rigidIndexSize>                 ::= <byte>
 
-<modelInformation>               ::= <name> <comment> <commentEnglish>
+<modelInformation>               ::= <modelName> <modelNameEnglish> <comment> <commentEnglish>
+<modelName>                      ::= <textBuffer>
+<modelNameEnglish>               ::= <textBuffer>
 <comment>                        ::= <textBuffer>
 <commentEnglish>                 ::= <textBuffer>
 
