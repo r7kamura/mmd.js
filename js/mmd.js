@@ -1,29 +1,9 @@
 (function() {
-  var ModelDataParser, getArrayBuffer;
 
-  getArrayBuffer = function(url, callback) {
-    var request;
-    request = new XMLHttpRequest();
-    request.open('GET', url);
-    request.responseType = 'arraybuffer';
-    request.send();
-    return request.onreadystatechange = function() {
-      if (request.readyState === 4) return callback(request.response);
-    };
-  };
+  this.ModelDataParser = (function() {
 
-  getArrayBuffer('/data/example.pmx', function(arrayBuffer) {
-    var dataView, parser;
-    dataView = new DataView(arrayBuffer);
-    parser = new ModelDataParser(dataView);
-    window.model = parser.parse();
-    return console.log(window.model);
-  });
-
-  ModelDataParser = (function() {
-
-    function ModelDataParser(dataView) {
-      this.dataView = dataView;
+    function ModelDataParser(arrayBuffer) {
+      this.dataView = new DataView(arrayBuffer);
       this.index = 0;
       this.model = {};
       this.options = {};
@@ -206,22 +186,25 @@
 
     ModelDataParser.prototype.modelData = function() {
       this.modelHeader();
-      this.modelInformation();
-      this.vertexes();
-      this.faces();
-      this.textures();
-      this.materials();
-      this.bones();
-      this.morphs();
-      this.frames();
-      this.rigids();
-      return this.joints();
+      this.model.name = this.text();
+      this.model.nameEnglish = this.text();
+      this.model.comment = this.text();
+      this.model.commentEnglish = this.text();
+      this.model.vertexes = this.vertexes();
+      this.model.faces = this.faces();
+      this.model.textures = this.textures();
+      this.model.materials = this.materials();
+      this.model.bones = this.bones();
+      this.model.morphs = this.morphs();
+      this.model.frames = this.frames();
+      this.model.rigids = this.rigids();
+      return this.model.joints = this.joints();
     };
 
     ModelDataParser.prototype.modelHeader = function() {
       this.pmxName();
       this.pmxVersion();
-      return this.modelStructureInformation();
+      return this.options = this.modelStructureInformation();
     };
 
     ModelDataParser.prototype.pmxName = function() {
@@ -234,73 +217,20 @@
 
     ModelDataParser.prototype.modelStructureInformation = function() {
       this.modelStructureInformationSize();
-      this.useUtf8();
-      this.extraUvSize();
-      this.vertexIndexSize();
-      this.textureIndexSize();
-      this.materialIndexSize();
-      this.boneIndexSize();
-      this.morphIndexSize();
-      return this.rigidIndexSize();
+      return {
+        useUtf8: this.byte(),
+        extraUvSize: this.byte(),
+        vertexIndexSize: this.byte(),
+        textureIndexSize: this.byte(),
+        materialIndexSize: this.byte(),
+        boneIndexSize: this.byte(),
+        morphIndexSize: this.byte(),
+        rigidIndexSize: this.byte()
+      };
     };
 
     ModelDataParser.prototype.modelStructureInformationSize = function() {
       return this.byte();
-    };
-
-    ModelDataParser.prototype.useUtf8 = function() {
-      return this.options.useUtf8 = !!this.byte();
-    };
-
-    ModelDataParser.prototype.extraUvSize = function() {
-      return this.options.extraUvSize = this.byte();
-    };
-
-    ModelDataParser.prototype.vertexIndexSize = function() {
-      return this.options.vertexIndexSize = this.byte();
-    };
-
-    ModelDataParser.prototype.textureIndexSize = function() {
-      return this.options.textureIndexSize = this.byte();
-    };
-
-    ModelDataParser.prototype.materialIndexSize = function() {
-      return this.options.materialIndexSize = this.byte();
-    };
-
-    ModelDataParser.prototype.boneIndexSize = function() {
-      return this.options.boneIndexSize = this.byte();
-    };
-
-    ModelDataParser.prototype.morphIndexSize = function() {
-      return this.options.morphIndexSize = this.byte();
-    };
-
-    ModelDataParser.prototype.rigidIndexSize = function() {
-      return this.options.rigidIndexSize = this.byte();
-    };
-
-    ModelDataParser.prototype.modelInformation = function() {
-      this.modelName();
-      this.modelNameEnglish();
-      this.modelComment();
-      return this.modelCommentEnglish();
-    };
-
-    ModelDataParser.prototype.modelName = function() {
-      return this.model.name = this.text();
-    };
-
-    ModelDataParser.prototype.modelNameEnglish = function() {
-      return this.model.nameEnglish = this.text();
-    };
-
-    ModelDataParser.prototype.modelComment = function() {
-      return this.model.comment = this.text();
-    };
-
-    ModelDataParser.prototype.modelCommentEnglish = function() {
-      return this.model.commentEnglish = this.text();
     };
 
     ModelDataParser.prototype.vertexes = function() {

@@ -1,24 +1,10 @@
-getArrayBuffer = (url, callback) ->
-  request = new XMLHttpRequest()
-  request.open('GET', url)
-  request.responseType = 'arraybuffer'
-  request.send()
-  request.onreadystatechange = ->
-    if request.readyState == 4
-      callback(request.response)
-
-getArrayBuffer '/data/example.pmx', (arrayBuffer) ->
-  dataView     = new DataView(arrayBuffer)
-  parser       = new ModelDataParser(dataView)
-  window.model = parser.parse()
-  console.log(window.model)
-
-class ModelDataParser
-  constructor: (@dataView) ->
-    @index   = 0
-    @model   = {}
-    @options = {}
-    @pmx     = {}
+class this.ModelDataParser
+  constructor: (arrayBuffer) ->
+    @dataView = new DataView(arrayBuffer)
+    @index    = 0
+    @model    = {}
+    @options  = {}
+    @pmx      = {}
 
   byte: () ->
     @uint8()
@@ -124,21 +110,24 @@ class ModelDataParser
 
   modelData: ->
     @modelHeader()
-    @modelInformation()
-    @vertexes()
-    @faces()
-    @textures()
-    @materials()
-    @bones()
-    @morphs()
-    @frames()
-    @rigids()
-    @joints()
+    @model.name           = @text()
+    @model.nameEnglish    = @text()
+    @model.comment        = @text()
+    @model.commentEnglish = @text()
+    @model.vertexes       = @vertexes()
+    @model.faces          = @faces()
+    @model.textures       = @textures()
+    @model.materials      = @materials()
+    @model.bones          = @bones()
+    @model.morphs         = @morphs()
+    @model.frames         = @frames()
+    @model.rigids         = @rigids()
+    @model.joints         = @joints()
 
   modelHeader: ->
     @pmxName()
     @pmxVersion()
-    @modelStructureInformation()
+    @options = @modelStructureInformation()
 
   pmxName: ->
     @pmx.name = @chars(4).join('')
@@ -148,59 +137,17 @@ class ModelDataParser
 
   modelStructureInformation: ->
     @modelStructureInformationSize()
-    @useUtf8()
-    @extraUvSize()
-    @vertexIndexSize()
-    @textureIndexSize()
-    @materialIndexSize()
-    @boneIndexSize()
-    @morphIndexSize()
-    @rigidIndexSize()
+    useUtf8: @byte()
+    extraUvSize: @byte()
+    vertexIndexSize: @byte()
+    textureIndexSize: @byte()
+    materialIndexSize: @byte()
+    boneIndexSize: @byte()
+    morphIndexSize: @byte()
+    rigidIndexSize: @byte()
 
   modelStructureInformationSize: ->
     @byte()
-
-  useUtf8: ->
-    @options.useUtf8 = !!@byte()
-
-  extraUvSize: ->
-    @options.extraUvSize = @byte()
-
-  vertexIndexSize: ->
-    @options.vertexIndexSize = @byte()
-
-  textureIndexSize: ->
-    @options.textureIndexSize = @byte()
-
-  materialIndexSize: ->
-    @options.materialIndexSize = @byte()
-
-  boneIndexSize: ->
-    @options.boneIndexSize = @byte()
-
-  morphIndexSize: ->
-    @options.morphIndexSize = @byte()
-
-  rigidIndexSize: ->
-    @options.rigidIndexSize = @byte()
-
-  modelInformation: ->
-    @modelName()
-    @modelNameEnglish()
-    @modelComment()
-    @modelCommentEnglish()
-
-  modelName: ->
-    @model.name = @text()
-
-  modelNameEnglish: ->
-    @model.nameEnglish = @text()
-
-  modelComment: ->
-    @model.comment = @text()
-
-  modelCommentEnglish: ->
-    @model.commentEnglish = @text()
 
   vertexes: ->
     @model.vertexes = (@vertex() for [0...@int()])

@@ -10,3 +10,5 @@ task :start do
     :StartCallback => proc { Launchy.open("http://localhost:#{port}") }
   ).start
 end
+
+task :default => :start
