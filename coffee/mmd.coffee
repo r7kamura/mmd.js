@@ -63,7 +63,9 @@ class ModelDataParser
     @float() for [0...size]
 
   text: ->
-    @bytes(@int())
+    bytes = @bytes(@int())
+    codes = (bytes[i] + bytes[i + 1] * 256 for i in [0...bytes.length] by 2)
+    String.fromCharCode.apply(null, codes)
 
   xyz: ->
     @floats(3)

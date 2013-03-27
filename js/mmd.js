@@ -100,7 +100,17 @@
     };
 
     ModelDataParser.prototype.text = function() {
-      return this.bytes(this.int());
+      var bytes, codes, i;
+      bytes = this.bytes(this.int());
+      codes = (function() {
+        var _ref, _results;
+        _results = [];
+        for (i = 0, _ref = bytes.length; i < _ref; i += 2) {
+          _results.push(bytes[i] + bytes[i + 1] * 256);
+        }
+        return _results;
+      })();
+      return String.fromCharCode.apply(null, codes);
     };
 
     ModelDataParser.prototype.xyz = function() {
