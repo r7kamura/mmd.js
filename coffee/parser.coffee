@@ -1,4 +1,4 @@
-class this.ModelDataParser
+class this.Parser
   constructor: (arrayBuffer) ->
     @dataView = new DataView(arrayBuffer)
     @index    = 0
