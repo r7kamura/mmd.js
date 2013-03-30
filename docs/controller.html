@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>controller.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="controller.html">
+                controller.coffee
+              </a>
+            
+              
+              <a class="source" href="loader.html">
+                loader.coffee
+              </a>
+            
+              
+              <a class="source" href="main.html">
+                main.coffee
+              </a>
+            
+              
+              <a class="source" href="parser.html">
+                parser.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>controller.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">this</span>.<span class="title">Controller</span></span>
+  constructor: (<span class="property">@model</span>) -&gt;
+    <span class="property">@width</span>    = window.innerWidth
+    <span class="property">@height</span>   = window.innerHeight
+    <span class="property">@renderer</span> = <span class="property">@createRenderer</span>()
+    <span class="property">@scene</span>    = <span class="property">@createScene</span>()
+    <span class="property">@camera</span>   = <span class="property">@createCamera</span>()
+    <span class="property">@vertexes</span> = <span class="property">@createVertexes</span>()
+    <span class="property">@scene</span>.add(<span class="property">@camera</span>)
+
+  render: -&gt;
+    document.body.appendChild(<span class="property">@renderer</span>.domElement)
+    <span class="property">@animate</span>()
+
+  animate: -&gt;
+    window.requestAnimationFrame =&gt; <span class="property">@animate</span>()
+    <span class="property">@renderer</span>.render(<span class="property">@scene</span>, <span class="property">@camera</span>)
+
+  createRenderer: -&gt;
+    renderer = <span class="keyword">new</span> THREE.WebGLRenderer(antialias: <span class="literal">true</span>)
+    renderer.setSize(<span class="property">@width</span>, <span class="property">@height</span>)
+    renderer
+
+  createScene: -&gt;
+    <span class="keyword">new</span> THREE.Scene()
+
+  createCamera: -&gt;
+    camera = <span class="keyword">new</span> THREE.PerspectiveCamera(<span class="number">75</span>, <span class="property">@width</span> / <span class="property">@height</span>, <span class="number">1</span>, <span class="number">10000</span>)
+    camera.position.z = <span class="number">1000</span>
+    camera
+
+  createVertexes: -&gt;
+    <span class="keyword">for</span> vertex <span class="keyword">in</span> <span class="property">@model</span>.vertexes <span class="keyword">by</span> <span class="number">10</span>
+      geometry = <span class="keyword">new</span> THREE.SphereGeometry(<span class="number">1</span>)
+      material = <span class="keyword">new</span> THREE.MeshBasicMaterial(color: <span class="number">0xff0000</span>, wireframe: <span class="literal">true</span>)
+      mesh     = <span class="keyword">new</span> THREE.Mesh(geometry, material)
+      mesh.position.set(
+        vertex.position[<span class="number">0</span>] * <span class="number">30</span>,
+        vertex.position[<span class="number">1</span>] * <span class="number">30</span>,
+        vertex.position[<span class="number">2</span>] * <span class="number">30</span>
+      )
+      <span class="property">@scene</span>.add(mesh)</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

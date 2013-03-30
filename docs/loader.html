@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>loader.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="controller.html">
+                controller.coffee
+              </a>
+            
+              
+              <a class="source" href="loader.html">
+                loader.coffee
+              </a>
+            
+              
+              <a class="source" href="main.html">
+                main.coffee
+              </a>
+            
+              
+              <a class="source" href="parser.html">
+                parser.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>loader.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Load arraybuffer via XHR and invoke callback.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">this</span>.<span class="title">Loader</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Create a new instance of Loader, then call <code>load</code> of that.
+This is a method object pattern.</p>
+<pre><code>Loader.load url, (arrayBuffer) -&gt;
+  console.log(arrayBuffer)</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="property">@load</span>: (args...) -&gt;
+    loader = <span class="keyword">new</span> <span class="keyword">this</span>(args...)
+    loader.load()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>The constructor.</p>
+<pre><code>url      - a String of the resource to ArrayBuffer
+callback - a Function called with the response object</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  constructor: (<span class="property">@url</span>, <span class="property">@callback</span>) -&gt;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Request resource via XHR and invoke callback with response.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  load: -&gt;
+    request = <span class="keyword">new</span> XMLHttpRequest()
+    request.open(<span class="string">'GET'</span>, <span class="property">@url</span>)
+    request.responseType = <span class="string">'arraybuffer'</span>
+    request.send()
+    request.<span class="function"><span class="title">onreadystatechange</span></span> = =&gt;
+      <span class="property">@callback</span>(request.response) <span class="keyword">if</span> request.readyState == <span class="number">4</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

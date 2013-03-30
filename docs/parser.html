@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>parser.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="controller.html">
+                controller.coffee
+              </a>
+            
+              
+              <a class="source" href="loader.html">
+                loader.coffee
+              </a>
+            
+              
+              <a class="source" href="main.html">
+                main.coffee
+              </a>
+            
+              
+              <a class="source" href="parser.html">
+                parser.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>parser.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">this</span>.<span class="title">Parser</span></span>
+  constructor: (arrayBuffer) -&gt;
+    <span class="property">@dataView</span> = <span class="keyword">new</span> DataView(arrayBuffer)
+    <span class="property">@index</span>    = <span class="number">0</span>
+    <span class="property">@model</span>    = {}
+    <span class="property">@options</span>  = {}
+    <span class="property">@pmx</span>      = {}
+
+  byte: () -&gt;
+    <span class="property">@uint8</span>()
+
+  int: () -&gt;
+    <span class="property">@int32</span>()
+
+  int8: () -&gt;
+    <span class="property">@index</span> += <span class="number">1</span>
+    <span class="property">@dataView</span>.getInt8(<span class="property">@index</span> - <span class="number">1</span>, <span class="literal">true</span>)
+
+  int16: () -&gt;
+    <span class="property">@index</span> += <span class="number">2</span>
+    <span class="property">@dataView</span>.getInt16(<span class="property">@index</span> - <span class="number">2</span>, <span class="literal">true</span>)
+
+  int32: () -&gt;
+    <span class="property">@index</span> += <span class="number">4</span>
+    <span class="property">@dataView</span>.getInt32(<span class="property">@index</span> - <span class="number">4</span>, <span class="literal">true</span>)
+
+  uint8: () -&gt;
+    <span class="property">@index</span> += <span class="number">1</span>
+    <span class="property">@dataView</span>.getUint8(<span class="property">@index</span> - <span class="number">1</span>, <span class="literal">true</span>)
+
+  uint16: () -&gt;
+    <span class="property">@index</span> += <span class="number">2</span>
+    <span class="property">@dataView</span>.getUint16(<span class="property">@index</span> - <span class="number">2</span>, <span class="literal">true</span>)
+
+  float: () -&gt;
+    <span class="property">@index</span> += <span class="number">4</span>
+    <span class="property">@dataView</span>.getFloat32(<span class="property">@index</span> - <span class="number">4</span>, <span class="literal">true</span>)
+
+  char: ()-&gt;
+    String.fromCharCode(<span class="property">@byte</span>())
+
+  chars: (size) -&gt;
+    <span class="property">@char</span>() <span class="keyword">for</span> [<span class="number">0.</span>..size]
+
+  bytes: (size) -&gt;
+    <span class="property">@byte</span>() <span class="keyword">for</span> [<span class="number">0.</span>..size]
+
+  floats: (size) -&gt;
+    <span class="property">@float</span>() <span class="keyword">for</span> [<span class="number">0.</span>..size]
+
+  text: -&gt;
+    bytes = <span class="property">@bytes</span>(<span class="property">@int</span>())
+    codes = (bytes[i] + bytes[i + <span class="number">1</span>] * <span class="number">256</span> <span class="keyword">for</span> i <span class="keyword">in</span> [<span class="number">0.</span>..bytes.length] <span class="keyword">by</span> <span class="number">2</span>)
+    String.fromCharCode.apply(<span class="literal">null</span>, codes)
+
+  xyz: -&gt;
+    <span class="property">@floats</span>(<span class="number">3</span>)
+
+  xyzw: -&gt;
+    <span class="property">@floats</span>(<span class="number">4</span>)
+
+  uv: -&gt;
+    <span class="property">@floats</span>(<span class="number">2</span>)
+
+  rgb: -&gt;
+    <span class="property">@floats</span>(<span class="number">3</span>)
+
+  rgba: -&gt;
+    <span class="property">@floats</span>(<span class="number">4</span>)
+
+  vertexIndex: -&gt;
+    <span class="keyword">switch</span> <span class="property">@options</span>.vertexIndexSize
+      <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@uint8</span>()
+      <span class="keyword">when</span> <span class="number">2</span> <span class="keyword">then</span> <span class="property">@uint16</span>()
+      <span class="keyword">when</span> <span class="number">4</span> <span class="keyword">then</span> <span class="property">@int32</span>()
+
+  boneIndex: -&gt;
+    <span class="keyword">switch</span> <span class="property">@options</span>.boneIndexSize
+      <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@int8</span>()
+      <span class="keyword">when</span> <span class="number">2</span> <span class="keyword">then</span> <span class="property">@int16</span>()
+      <span class="keyword">when</span> <span class="number">4</span> <span class="keyword">then</span> <span class="property">@int32</span>()
+
+  textureIndex: -&gt;
+    <span class="keyword">switch</span> <span class="property">@options</span>.textureIndexSize
+      <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@int8</span>()
+      <span class="keyword">when</span> <span class="number">2</span> <span class="keyword">then</span> <span class="property">@int16</span>()
+      <span class="keyword">when</span> <span class="number">4</span> <span class="keyword">then</span> <span class="property">@int32</span>()
+
+  materialIndex: -&gt;
+    <span class="keyword">switch</span> <span class="property">@options</span>.materialIndexSize
+      <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@int8</span>()
+      <span class="keyword">when</span> <span class="number">2</span> <span class="keyword">then</span> <span class="property">@int16</span>()
+      <span class="keyword">when</span> <span class="number">4</span> <span class="keyword">then</span> <span class="property">@int32</span>()
+
+  morphIndex: -&gt;
+    <span class="keyword">switch</span> <span class="property">@options</span>.morphIndexSize
+      <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@int8</span>()
+      <span class="keyword">when</span> <span class="number">2</span> <span class="keyword">then</span> <span class="property">@int16</span>()
+      <span class="keyword">when</span> <span class="number">4</span> <span class="keyword">then</span> <span class="property">@int32</span>()
+
+  rigidIndex: -&gt;
+    <span class="keyword">switch</span> <span class="property">@options</span>.rigidIndexSize
+      <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@int8</span>()
+      <span class="keyword">when</span> <span class="number">2</span> <span class="keyword">then</span> <span class="property">@int16</span>()
+      <span class="keyword">when</span> <span class="number">4</span> <span class="keyword">then</span> <span class="property">@int32</span>()
+
+  parse: -&gt;
+    <span class="property">@modelData</span>()
+    <span class="property">@model</span>
+
+  modelData: -&gt;
+    <span class="property">@modelHeader</span>()
+    <span class="property">@model</span>.name           = <span class="property">@text</span>()
+    <span class="property">@model</span>.nameEnglish    = <span class="property">@text</span>()
+    <span class="property">@model</span>.comment        = <span class="property">@text</span>()
+    <span class="property">@model</span>.commentEnglish = <span class="property">@text</span>()
+    <span class="property">@model</span>.vertexes       = <span class="property">@vertexes</span>()
+    <span class="property">@model</span>.faces          = <span class="property">@faces</span>()
+    <span class="property">@model</span>.textures       = <span class="property">@textures</span>()
+    <span class="property">@model</span>.materials      = <span class="property">@materials</span>()
+    <span class="property">@model</span>.bones          = <span class="property">@bones</span>()
+    <span class="property">@model</span>.morphs         = <span class="property">@morphs</span>()
+    <span class="property">@model</span>.frames         = <span class="property">@frames</span>()
+    <span class="property">@model</span>.rigids         = <span class="property">@rigids</span>()
+    <span class="property">@model</span>.joints         = <span class="property">@joints</span>()
+
+  modelHeader: -&gt;
+    <span class="property">@pmxName</span>()
+    <span class="property">@pmxVersion</span>()
+    <span class="property">@options</span> = <span class="property">@modelStructureInformation</span>()
+
+  pmxName: -&gt;
+    <span class="property">@pmx</span>.name = <span class="property">@chars</span>(<span class="number">4</span>).join(<span class="string">''</span>)
+
+  pmxVersion: -&gt;
+    <span class="property">@pmx</span>.version = <span class="property">@float</span>()
+
+  modelStructureInformation: -&gt;
+    <span class="property">@modelStructureInformationSize</span>()
+    useUtf8: <span class="property">@byte</span>()
+    extraUvSize: <span class="property">@byte</span>()
+    vertexIndexSize: <span class="property">@byte</span>()
+    textureIndexSize: <span class="property">@byte</span>()
+    materialIndexSize: <span class="property">@byte</span>()
+    boneIndexSize: <span class="property">@byte</span>()
+    morphIndexSize: <span class="property">@byte</span>()
+    rigidIndexSize: <span class="property">@byte</span>()
+
+  modelStructureInformationSize: -&gt;
+    <span class="property">@byte</span>()
+
+  vertexes: -&gt;
+    <span class="property">@model</span>.vertexes = (<span class="property">@vertex</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+
+  vertex: -&gt;
+    position: <span class="property">@xyz</span>()
+    normal: <span class="property">@xyz</span>()
+    uv: <span class="property">@uv</span>()
+    extraUvs: <span class="property">@vertexExtraUvs</span>()
+    weight: <span class="property">@vertexWeight</span>()
+    edgeRate: <span class="property">@vertexEdgeRate</span>()
+
+  vertexExtraUvs: -&gt;
+    <span class="property">@vertexExtraUv</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@options</span>.extraUvSize]
+
+  vertexExtraUv: -&gt;
+    <span class="property">@xyzw</span>()
+
+  vertexWeight: -&gt;
+    <span class="keyword">switch</span> <span class="property">@vertexWeightType</span>()
+      <span class="keyword">when</span> <span class="number">0</span> <span class="keyword">then</span> <span class="property">@vertexWeightBdef1</span>()
+      <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@vertexWeightBdef2</span>()
+      <span class="keyword">when</span> <span class="number">2</span> <span class="keyword">then</span> <span class="property">@vertexWeightBdef4</span>()
+      <span class="keyword">when</span> <span class="number">3</span> <span class="keyword">then</span> <span class="property">@vertexWeightSdef</span>()
+
+  vertexWeightType: -&gt;
+    <span class="property">@byte</span>()
+
+  vertexWeightBdef1: -&gt;
+    <span class="property">@boneIndex</span>()
+
+  vertexWeightBdef2: -&gt;
+    [
+      <span class="property">@boneIndex</span>()
+      <span class="property">@boneIndex</span>()
+      <span class="property">@vertexWeightRate</span>()
+    ]
+
+  vertexWeightBdef4: -&gt;
+    [
+      <span class="property">@boneIndex</span>()
+      <span class="property">@boneIndex</span>()
+      <span class="property">@boneIndex</span>()
+      <span class="property">@boneIndex</span>()
+      <span class="property">@vertexWeightRate</span>()
+      <span class="property">@vertexWeightRate</span>()
+      <span class="property">@vertexWeightRate</span>()
+      <span class="property">@vertexWeightRate</span>()
+    ]
+
+  vertexWeightSdef: -&gt;
+    [
+      <span class="property">@boneIndex</span>()
+      <span class="property">@boneIndex</span>()
+      <span class="property">@vertexWeightRate</span>()
+      <span class="property">@vertexWeightCVector</span>()
+      <span class="property">@vertexWeightR0Vector</span>()
+      <span class="property">@vertexWeightR1Vector</span>()
+    ]
+
+  vertexWeightCVector: -&gt;
+    <span class="property">@xyz</span>()
+
+  vertexWeightR0Vector: -&gt;
+    <span class="property">@xyz</span>()
+
+  vertexWeightR1Vector: -&gt;
+    <span class="property">@xyz</span>()
+
+  vertexWeightRate: -&gt;
+    <span class="property">@float</span>()
+
+  vertexEdgeRate: -&gt;
+    <span class="property">@float</span>()
+
+  faces: -&gt;
+    <span class="property">@model</span>.faces = (<span class="property">@face</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+
+  face: -&gt;
+    <span class="property">@vertexIndex</span>()
+
+  textures: -&gt;
+    <span class="property">@model</span>.textures = (<span class="property">@texture</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+
+  texture: -&gt;
+    <span class="property">@texturePath</span>()
+
+  texturePath: -&gt;
+    <span class="property">@text</span>()
+
+  materials: -&gt;
+    <span class="property">@model</span>.materials = (<span class="property">@material</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+
+  material: -&gt;
+    name: <span class="property">@text</span>()
+    nameEnglish: <span class="property">@text</span>()
+    diffusion: <span class="property">@rgba</span>()
+    specular: <span class="property">@rgb</span>()
+    specularFactor: <span class="property">@float</span>()
+    ambient: <span class="property">@rgb</span>()
+    drawFlag: <span class="property">@byte</span>()
+    edgeColor: <span class="property">@rgba</span>()
+    edgeSize: <span class="property">@float</span>()
+    normalTexture: <span class="property">@textureIndex</span>()
+    sphereIndex: <span class="property">@textureIndex</span>()
+    sphereMode: <span class="property">@byte</span>()
+    toonTexture: <span class="property">@materialToonTexture</span>()
+    memo: <span class="property">@text</span>()
+    faceSize: <span class="property">@int</span>()
+
+  materialToonTexture: -&gt;
+    <span class="keyword">switch</span> <span class="property">@byte</span>()
+      <span class="keyword">when</span> <span class="number">0</span> <span class="keyword">then</span> <span class="property">@textureIndex</span>()
+      <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@byte</span>()
+
+  bones: -&gt;
+    <span class="property">@model</span>.bones = (<span class="property">@bone</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+
+  bone: -&gt;
+    object                 = {}
+    object.name            = <span class="property">@text</span>()
+    object.nameEnglish     = <span class="property">@text</span>()
+    object.position        = <span class="property">@xyz</span>()
+    object.parentBone      = <span class="property">@boneIndex</span>()
+    object.transitionState = <span class="property">@int</span>()
+    object.flags           = flags = <span class="property">@boneFlags</span>()
+    object.destination     = <span class="keyword">if</span> flags.specifiedByIndex <span class="keyword">then</span> <span class="property">@boneIndex</span>() <span class="keyword">else</span> <span class="property">@xyz</span>()
+    object.addedBone       = <span class="property">@boneIndex</span>() <span class="keyword">if</span> flags.useAddedRotation || flags.useAddedTranslation
+    object.addedRate       = <span class="property">@float</span>() <span class="keyword">if</span> flags.useAddedRotation || flags.useAddedTranslation
+    object.fixedAxis       = <span class="property">@xyz</span>() <span class="keyword">if</span> flags.useFixedAxis
+    object.localAxisX      = <span class="property">@xyz</span>() <span class="keyword">if</span> flags.useLocalAxis
+    object.localAxisZ      = <span class="property">@xyz</span>() <span class="keyword">if</span> flags.useLocalAxis
+    object.key             = <span class="property">@int</span>() <span class="keyword">if</span> flags.useParentTransform
+    object.ikTargetBone    = <span class="property">@boneIndex</span>() <span class="keyword">if</span> flags.useIk
+    object.ikLoop          = <span class="property">@int</span>() <span class="keyword">if</span> flags.useIk
+    object.ikLimit         = <span class="property">@float</span>() <span class="keyword">if</span> flags.useIk
+    object.ikLinks         = <span class="property">@boneLinks</span>() <span class="keyword">if</span> flags.useIk
+    object
+
+  boneFlags: -&gt;
+    bits = <span class="property">@uint16</span>()
+    specifiedByIndex:     !!(bits &amp; <span class="number">1</span>)
+    useRotation:          !!(bits &amp; <span class="number">2</span>)
+    useTranslation:       !!(bits &amp; <span class="number">4</span>)
+    displayed:            !!(bits &amp; <span class="number">8</span>)
+    useControl:           !!(bits &amp; <span class="number">16</span>)
+    useIk:                !!(bits &amp; <span class="number">32</span>)
+    useAddedRotation:     !!(bits &amp; <span class="number">256</span>)
+    useAddedTranslation:  !!(bits &amp; <span class="number">512</span>)
+    useFixedAxis:         !!(bits &amp; <span class="number">1024</span>)
+    useLocalAxis:         !!(bits &amp; <span class="number">2048</span>)
+    usePhysicalTransform: !!(bits &amp; <span class="number">4096</span>)
+    useParentTransform:   !!(bits &amp; <span class="number">8192</span>)
+
+  boneLinks: -&gt;
+    (<span class="property">@boneLink</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+
+  boneLink: -&gt;
+    bone    = <span class="property">@boneIndex</span>()
+    limited = <span class="property">@byte</span>()
+    bone: bone
+    lowerLimit: <span class="property">@xyz</span>() <span class="keyword">if</span> limited
+    upperLimit: <span class="property">@xyz</span>() <span class="keyword">if</span> limited
+
+  morphs: -&gt;
+    <span class="property">@model</span>.morphs = (<span class="property">@morph</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+
+  morph: -&gt;
+    object              = {}
+    object.name         = <span class="property">@text</span>()
+    object.nameEnglish  = <span class="property">@text</span>()
+    object.controlPanel = <span class="property">@byte</span>()
+    object.type         = <span class="property">@byte</span>()
+    object.records      = (<span class="property">@morphRecord</span>(object.type) <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+    object
+
+  morphRecord: (type) -&gt;
+    <span class="keyword">switch</span> type
+      <span class="keyword">when</span> <span class="number">0</span> <span class="keyword">then</span> <span class="property">@morphRecordGroup</span>()
+      <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@morphRecordVertex</span>()
+      <span class="keyword">when</span> <span class="number">2</span> <span class="keyword">then</span> <span class="property">@morphRecordBone</span>()
+      <span class="keyword">when</span> <span class="number">3</span> <span class="keyword">then</span> <span class="property">@morphRecordUv</span>()
+      <span class="keyword">when</span> <span class="number">4</span> <span class="keyword">then</span> <span class="property">@morphRecordUv</span>()
+      <span class="keyword">when</span> <span class="number">5</span> <span class="keyword">then</span> <span class="property">@morphRecordUv</span>()
+      <span class="keyword">when</span> <span class="number">6</span> <span class="keyword">then</span> <span class="property">@morphRecordUv</span>()
+      <span class="keyword">when</span> <span class="number">7</span> <span class="keyword">then</span> <span class="property">@morphRecordUv</span>()
+      <span class="keyword">when</span> <span class="number">8</span> <span class="keyword">then</span> <span class="property">@morphRecordMaterial</span>()
+
+  morphRecordVertex: -&gt;
+    index: <span class="property">@vertexIndex</span>()
+    offset: <span class="property">@xyz</span>()
+
+  morphRecordUv: -&gt;
+    index: <span class="property">@vertexIndex</span>()
+    offset: <span class="property">@xyzw</span>()
+
+  morphRecordBone: -&gt;
+    index: <span class="property">@boneIndex</span>()
+    translation: <span class="property">@xyz</span>()
+    rotation: <span class="property">@xyzw</span>()
+
+  morphRecordMaterial: -&gt;
+    index: <span class="property">@materialIndex</span>()
+    calculationType: <span class="property">@byte</span>()
+    diffusion: <span class="property">@rgba</span>()
+    specular: <span class="property">@rgb</span>()
+    specularFactor: <span class="property">@float</span>()
+    ambient: <span class="property">@rgb</span>()
+    edgeColor: <span class="property">@rgba</span>()
+    edgeSize: <span class="property">@float</span>()
+    textureFactor: <span class="property">@rgba</span>()
+    sphereTextureFactor: <span class="property">@rgba</span>()
+    toonTextureFactor: <span class="property">@rgba</span>()
+
+  morphRecordGroup: -&gt;
+    index: <span class="property">@morphIndex</span>()
+    rate: <span class="property">@float</span>()
+
+  frames: -&gt;
+    <span class="property">@model</span>.frame = (<span class="property">@frame</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+
+  frame: -&gt;
+    name: <span class="property">@text</span>()
+    nameEnglish: <span class="property">@text</span>()
+    specialFrameFlag: <span class="property">@byte</span>()
+    elements: <span class="property">@frameElements</span>()
+
+  frameElements: -&gt;
+    <span class="property">@frameElement</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()]
+
+  frameElement: -&gt;
+    <span class="keyword">if</span> <span class="property">@byte</span>()
+      <span class="property">@morphIndex</span>()
+    <span class="keyword">else</span>
+      <span class="property">@boneIndex</span>()
+
+  rigids: -&gt;
+    <span class="property">@model</span>.rigid = (<span class="property">@rigid</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+
+  rigid: -&gt;
+    name: <span class="property">@text</span>()
+    nameEnglish: <span class="property">@text</span>()
+    boneIndex: <span class="property">@boneIndex</span>()
+    group: <span class="property">@byte</span>()
+    collisionGroupFlag: <span class="property">@uint16</span>()
+    shape: <span class="property">@byte</span>()
+    size: <span class="property">@xyz</span>()
+    position: <span class="property">@xyz</span>()
+    rotation: <span class="property">@xyz</span>()
+    mass: <span class="property">@float</span>()
+    translationDecay: <span class="property">@float</span>()
+    rotationDecay: <span class="property">@float</span>()
+    bounce: <span class="property">@float</span>()
+    friction: <span class="property">@float</span>()
+    calculationType: <span class="property">@byte</span>()
+
+  joints: -&gt;
+    <span class="property">@model</span>.joints = (<span class="property">@joint</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+
+  joint: -&gt;
+    name: <span class="property">@text</span>()
+    nameEnglish: <span class="property">@text</span>()
+    type: <span class="property">@byte</span>()
+    rigidA: <span class="property">@rigidIndex</span>()
+    rigidB: <span class="property">@rigidIndex</span>()
+    position: <span class="property">@xyz</span>()
+    rotation: <span class="property">@xyz</span>()
+    lowerTranslationLimit: <span class="property">@xyz</span>()
+    upperTranslationLimit: <span class="property">@xyz</span>()
+    lowerRotationLimit: <span class="property">@xyz</span>()
+    upperRotationLimit: <span class="property">@xyz</span>()
+    translationSpringFactor: <span class="property">@xyz</span>()
+    rationSpringFactor: <span class="property">@xyz</span>()</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
