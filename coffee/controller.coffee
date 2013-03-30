@@ -62,27 +62,23 @@ class this.Controller
     enlargementFactor = 30
     for face in @model.faces by interval
       geometry = new THREE.Geometry()
-      geometry.vertices.push(
+      geometry.vertices = [
         new THREE.Vector3(
           @model.vertexes[face[0]].position[0] * enlargementFactor,
           @model.vertexes[face[0]].position[1] * enlargementFactor,
           @model.vertexes[face[0]].position[2] * enlargementFactor
-        )
-      )
-      geometry.vertices.push(
+        ),
         new THREE.Vector3(
           @model.vertexes[face[1]].position[0] * enlargementFactor,
           @model.vertexes[face[1]].position[1] * enlargementFactor,
           @model.vertexes[face[1]].position[2] * enlargementFactor
-        )
-      )
-      geometry.vertices.push(
+        ),
         new THREE.Vector3(
           @model.vertexes[face[2]].position[0] * enlargementFactor,
           @model.vertexes[face[2]].position[1] * enlargementFactor,
           @model.vertexes[face[2]].position[2] * enlargementFactor
-        )
-      )
+        ),
+      ]
       geometry.faces.push(new THREE.Face3(0, 1, 2))
       geometry.computeFaceNormals()
       mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial())

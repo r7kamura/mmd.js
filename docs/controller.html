@@ -208,27 +208,23 @@ This is adjusted by the value <code>interval</code>.</p>
     enlargementFactor = <span class="number">30</span>
     <span class="keyword">for</span> face <span class="keyword">in</span> <span class="property">@model</span>.faces <span class="keyword">by</span> interval
       geometry = <span class="keyword">new</span> THREE.Geometry()
-      geometry.vertices.push(
+      geometry.vertices = [
         <span class="keyword">new</span> THREE.Vector3(
           <span class="property">@model</span>.vertexes[face[<span class="number">0</span>]].position[<span class="number">0</span>] * enlargementFactor,
           <span class="property">@model</span>.vertexes[face[<span class="number">0</span>]].position[<span class="number">1</span>] * enlargementFactor,
           <span class="property">@model</span>.vertexes[face[<span class="number">0</span>]].position[<span class="number">2</span>] * enlargementFactor
-        )
-      )
-      geometry.vertices.push(
+        ),
         <span class="keyword">new</span> THREE.Vector3(
           <span class="property">@model</span>.vertexes[face[<span class="number">1</span>]].position[<span class="number">0</span>] * enlargementFactor,
           <span class="property">@model</span>.vertexes[face[<span class="number">1</span>]].position[<span class="number">1</span>] * enlargementFactor,
           <span class="property">@model</span>.vertexes[face[<span class="number">1</span>]].position[<span class="number">2</span>] * enlargementFactor
-        )
-      )
-      geometry.vertices.push(
+        ),
         <span class="keyword">new</span> THREE.Vector3(
           <span class="property">@model</span>.vertexes[face[<span class="number">2</span>]].position[<span class="number">0</span>] * enlargementFactor,
           <span class="property">@model</span>.vertexes[face[<span class="number">2</span>]].position[<span class="number">1</span>] * enlargementFactor,
           <span class="property">@model</span>.vertexes[face[<span class="number">2</span>]].position[<span class="number">2</span>] * enlargementFactor
-        )
-      )
+        ),
+      ]
       geometry.faces.push(<span class="keyword">new</span> THREE.Face3(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>))
       geometry.computeFaceNormals()
       mesh = <span class="keyword">new</span> THREE.Mesh(geometry, <span class="keyword">new</span> THREE.MeshNormalMaterial())
