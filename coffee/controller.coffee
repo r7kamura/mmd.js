@@ -1,4 +1,11 @@
-# Control model and three.
+# Control model and three.js.
+#
+# ```
+# parser     = new Parser(arrayBuffer)
+# model      = parser.parse()
+# controller = new Controller(model)
+# controller.render()
+# ```
 class this.Controller
 
   # Prepare objects to render 3D world.
@@ -21,7 +28,7 @@ class this.Controller
     @scene.add(vertex) for vertex in @vertexes
     @animate()
 
-  # Update world.
+  # Update world by recursion.
   # This is a process invoked in each frame.
   animate: ->
     window.requestAnimationFrame => @animate()
