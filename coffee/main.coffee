@@ -3,3 +3,4 @@ Loader.load 'data/example.pmx', (arrayBuffer) ->
   model      = parser.parse()
   controller = new Controller(model)
   controller.render()
+  window.model = model

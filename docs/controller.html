@@ -93,7 +93,7 @@ controller.render()</code></pre>
     <span class="property">@renderer</span> = <span class="property">@createRenderer</span>()
     <span class="property">@scene</span>    = <span class="property">@createScene</span>()
     <span class="property">@camera</span>   = <span class="property">@createCamera</span>()
-    <span class="property">@vertexes</span> = <span class="property">@createVertexes</span>()</pre></div></div>
+    <span class="property">@faces</span>    = <span class="property">@createFaces</span>()</pre></div></div>
             
         </li>
         
@@ -111,7 +111,7 @@ controller.render()</code></pre>
             <div class="content"><div class='highlight'><pre>  render: -&gt;
     document.body.appendChild(<span class="property">@renderer</span>.domElement)
     <span class="property">@scene</span>.add(<span class="property">@camera</span>)
-    <span class="property">@scene</span>.add(vertex) <span class="keyword">for</span> vertex <span class="keyword">in</span> <span class="property">@vertexes</span>
+    <span class="property">@scene</span>.add(face) <span class="keyword">for</span> face <span class="keyword">in</span> <span class="property">@faces</span>
     <span class="property">@renderer</span>.render(<span class="property">@scene</span>, <span class="property">@camera</span>)</pre></div></div>
             
         </li>
@@ -197,25 +197,41 @@ This is a process invoked in each frame.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>Create meshes representing the vertexes of MMD model.
+              <p>Create faces of MMD model.
 Due to the performance reason, we don&#39;t render all of vertexes.
 This is adjusted by the value <code>interval</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  createVertexes: -&gt;
-    interval          = <span class="number">100</span>
+            <div class="content"><div class='highlight'><pre>  createFaces: -&gt;
+    interval          = <span class="number">10</span>
     enlargementFactor = <span class="number">30</span>
-    meshColor         = <span class="number">0xff0000</span>
-    <span class="keyword">for</span> vertex <span class="keyword">in</span> <span class="property">@model</span>.vertexes <span class="keyword">by</span> interval
-      geometry = <span class="keyword">new</span> THREE.SphereGeometry(<span class="number">1</span>)
-      material = <span class="keyword">new</span> THREE.MeshBasicMaterial(color: meshColor, wireframe: <span class="literal">true</span>)
-      mesh     = <span class="keyword">new</span> THREE.Mesh(geometry, material)
-      mesh.position.set(
-        vertex.position[<span class="number">0</span>] * enlargementFactor,
-        vertex.position[<span class="number">1</span>] * enlargementFactor,
-        vertex.position[<span class="number">2</span>] * enlargementFactor
+    <span class="keyword">for</span> face <span class="keyword">in</span> <span class="property">@model</span>.faces <span class="keyword">by</span> interval
+      geometry = <span class="keyword">new</span> THREE.Geometry()
+      geometry.vertices.push(
+        <span class="keyword">new</span> THREE.Vector3(
+          <span class="property">@model</span>.vertexes[face[<span class="number">0</span>]].position[<span class="number">0</span>] * enlargementFactor,
+          <span class="property">@model</span>.vertexes[face[<span class="number">0</span>]].position[<span class="number">1</span>] * enlargementFactor,
+          <span class="property">@model</span>.vertexes[face[<span class="number">0</span>]].position[<span class="number">2</span>] * enlargementFactor
+        )
       )
+      geometry.vertices.push(
+        <span class="keyword">new</span> THREE.Vector3(
+          <span class="property">@model</span>.vertexes[face[<span class="number">1</span>]].position[<span class="number">0</span>] * enlargementFactor,
+          <span class="property">@model</span>.vertexes[face[<span class="number">1</span>]].position[<span class="number">1</span>] * enlargementFactor,
+          <span class="property">@model</span>.vertexes[face[<span class="number">1</span>]].position[<span class="number">2</span>] * enlargementFactor
+        )
+      )
+      geometry.vertices.push(
+        <span class="keyword">new</span> THREE.Vector3(
+          <span class="property">@model</span>.vertexes[face[<span class="number">2</span>]].position[<span class="number">0</span>] * enlargementFactor,
+          <span class="property">@model</span>.vertexes[face[<span class="number">2</span>]].position[<span class="number">1</span>] * enlargementFactor,
+          <span class="property">@model</span>.vertexes[face[<span class="number">2</span>]].position[<span class="number">2</span>] * enlargementFactor
+        )
+      )
+      geometry.faces.push(<span class="keyword">new</span> THREE.Face3(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>))
+      geometry.computeFaceNormals()
+      mesh = <span class="keyword">new</span> THREE.Mesh(geometry, <span class="keyword">new</span> THREE.MeshNormalMaterial())
       mesh</pre></div></div>
             
         </li>

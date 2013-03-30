@@ -9,17 +9,17 @@
       this.renderer = this.createRenderer();
       this.scene = this.createScene();
       this.camera = this.createCamera();
-      this.vertexes = this.createVertexes();
+      this.faces = this.createFaces();
     }
 
     Controller.prototype.render = function() {
-      var vertex, _i, _len, _ref;
+      var face, _i, _len, _ref;
       document.body.appendChild(this.renderer.domElement);
       this.scene.add(this.camera);
-      _ref = this.vertexes;
+      _ref = this.faces;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        vertex = _ref[_i];
-        this.scene.add(vertex);
+        face = _ref[_i];
+        this.scene.add(face);
       }
       return this.renderer.render(this.scene, this.camera);
     };
@@ -56,22 +56,21 @@
       return camera;
     };
 
-    Controller.prototype.createVertexes = function() {
-      var enlargementFactor, geometry, interval, material, mesh, meshColor, vertex, _i, _len, _ref, _results, _step;
-      interval = 100;
+    Controller.prototype.createFaces = function() {
+      var enlargementFactor, face, geometry, interval, mesh, _i, _len, _ref, _results, _step;
+      interval = 10;
       enlargementFactor = 30;
-      meshColor = 0xff0000;
-      _ref = this.model.vertexes;
+      _ref = this.model.faces;
       _results = [];
       for (_i = 0, _len = _ref.length, _step = interval; _i < _len; _i += _step) {
-        vertex = _ref[_i];
-        geometry = new THREE.SphereGeometry(1);
-        material = new THREE.MeshBasicMaterial({
-          color: meshColor,
-          wireframe: true
-        });
-        mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(vertex.position[0] * enlargementFactor, vertex.position[1] * enlargementFactor, vertex.position[2] * enlargementFactor);
+        face = _ref[_i];
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(this.model.vertexes[face[0]].position[0] * enlargementFactor, this.model.vertexes[face[0]].position[1] * enlargementFactor, this.model.vertexes[face[0]].position[2] * enlargementFactor));
+        geometry.vertices.push(new THREE.Vector3(this.model.vertexes[face[1]].position[0] * enlargementFactor, this.model.vertexes[face[1]].position[1] * enlargementFactor, this.model.vertexes[face[1]].position[2] * enlargementFactor));
+        geometry.vertices.push(new THREE.Vector3(this.model.vertexes[face[2]].position[0] * enlargementFactor, this.model.vertexes[face[2]].position[1] * enlargementFactor, this.model.vertexes[face[2]].position[2] * enlargementFactor));
+        geometry.faces.push(new THREE.Face3(0, 1, 2));
+        geometry.computeFaceNormals();
+        mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
         _results.push(mesh);
       }
       return _results;

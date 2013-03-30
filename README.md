@@ -1,5 +1,5 @@
 # MMD.js
-![Hatsune Miku](http://dl.dropbox.com/u/5978869/image/20130329_010914.png)
+![Hatsune Miku](http://dl.dropbox.com/u/5978869/image/20130330_214128.png)
 
 ( [Hatsune Miku](http://piapro.net/en_for_creators.html#prettyPhoto) / Crypton Future Media inc. / [CC BY-NC](http://creativecommons.org/licenses/by-nc/3.0/) )  
 MMD.js is a project to work MMD in a web browser with client-side JavaScript.

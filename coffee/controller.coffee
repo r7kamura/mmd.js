@@ -19,13 +19,13 @@ class this.Controller
     @renderer = @createRenderer()
     @scene    = @createScene()
     @camera   = @createCamera()
-    @vertexes = @createVertexes()
+    @faces    = @createFaces()
 
   # Put canvas object, and start rendering loop.
   render: ->
     document.body.appendChild(@renderer.domElement)
     @scene.add(@camera)
-    @scene.add(vertex) for vertex in @vertexes
+    @scene.add(face) for face in @faces
     @renderer.render(@scene, @camera)
 
   # Update world by recursion.
@@ -54,20 +54,36 @@ class this.Controller
     camera.position.z = 1000
     camera
 
-  # Create meshes representing the vertexes of MMD model.
+  # Create faces of MMD model.
   # Due to the performance reason, we don't render all of vertexes.
   # This is adjusted by the value `interval`.
-  createVertexes: ->
-    interval          = 100
+  createFaces: ->
+    interval          = 10
     enlargementFactor = 30
-    meshColor         = 0xff0000
-    for vertex in @model.vertexes by interval
-      geometry = new THREE.SphereGeometry(1)
-      material = new THREE.MeshBasicMaterial(color: meshColor, wireframe: true)
-      mesh     = new THREE.Mesh(geometry, material)
-      mesh.position.set(
-        vertex.position[0] * enlargementFactor,
-        vertex.position[1] * enlargementFactor,
-        vertex.position[2] * enlargementFactor
+    for face in @model.faces by interval
+      geometry = new THREE.Geometry()
+      geometry.vertices.push(
+        new THREE.Vector3(
+          @model.vertexes[face[0]].position[0] * enlargementFactor,
+          @model.vertexes[face[0]].position[1] * enlargementFactor,
+          @model.vertexes[face[0]].position[2] * enlargementFactor
+        )
       )
+      geometry.vertices.push(
+        new THREE.Vector3(
+          @model.vertexes[face[1]].position[0] * enlargementFactor,
+          @model.vertexes[face[1]].position[1] * enlargementFactor,
+          @model.vertexes[face[1]].position[2] * enlargementFactor
+        )
+      )
+      geometry.vertices.push(
+        new THREE.Vector3(
+          @model.vertexes[face[2]].position[0] * enlargementFactor,
+          @model.vertexes[face[2]].position[1] * enlargementFactor,
+          @model.vertexes[face[2]].position[2] * enlargementFactor
+        )
+      )
+      geometry.faces.push(new THREE.Face3(0, 1, 2))
+      geometry.computeFaceNormals()
+      mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial())
       mesh

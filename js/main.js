@@ -5,7 +5,8 @@
     parser = new Parser(arrayBuffer);
     model = parser.parse();
     controller = new Controller(model);
-    return controller.render();
+    controller.render();
+    return window.model = model;
   });
 
 }).call(this);
