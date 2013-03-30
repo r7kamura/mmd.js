@@ -14,14 +14,21 @@ $ npm install -g coffee-script
 $ npm install -g docco
 ```
 
-### Launch
+### Utility
 ```
-$ bundle exec rake start
-```
+$ bundle exec rake -T
+rake all      # Launch server and keep auto-compile in multi-thread
+rake compile  # Compile coffee to js and documents
+rake server   # Launch server on localhost (Port is ENV['PORT'] or 8080)
 
-### Compile
-```
-$ bundle exec watchr watchr.rb
+# compile
+$ bundle exec rake compile
+
+# server
+$ bundle exec rake server
+
+# all
+$ bundle exec rake all
 ```
 
 ### Files
