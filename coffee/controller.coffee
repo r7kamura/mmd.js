@@ -34,7 +34,7 @@ class this.Controller
     window.requestAnimationFrame => @animate()
     @renderer.render(@scene, @camera)
 
-  # Create a renderer required to render world.
+  # Create a renderer object required to render world.
   createRenderer: ->
     renderer = new THREE.WebGLRenderer(antialias: true)
     renderer.setSize(@width, @height)
