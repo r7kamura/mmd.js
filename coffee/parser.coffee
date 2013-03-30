@@ -224,10 +224,14 @@ class this.Parser
     @float()
 
   faces: ->
-    @model.faces = (@face() for [0...@int()])
+    @model.faces = (@face() for [0...@int() / 3])
 
   face: ->
-    @vertexIndex()
+    [
+      @vertexIndex()
+      @vertexIndex()
+      @vertexIndex()
+    ]
 
   textures: ->
     @model.textures = (@texture() for [0...@int()])

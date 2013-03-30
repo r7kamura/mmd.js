@@ -325,7 +325,7 @@
       return this.model.faces = (function() {
         var _i, _ref, _results;
         _results = [];
-        for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
+        for (_i = 0, _ref = this.int() / 3; 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
           _results.push(this.face());
         }
         return _results;
@@ -333,7 +333,7 @@
     };
 
     Parser.prototype.face = function() {
-      return this.vertexIndex();
+      return [this.vertexIndex(), this.vertexIndex(), this.vertexIndex()];
     };
 
     Parser.prototype.textures = function() {

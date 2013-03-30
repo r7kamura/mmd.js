@@ -292,10 +292,14 @@
     <span class="property">@float</span>()
 
   faces: -&gt;
-    <span class="property">@model</span>.faces = (<span class="property">@face</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+    <span class="property">@model</span>.faces = (<span class="property">@face</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>() / <span class="number">3</span>])
 
   face: -&gt;
-    <span class="property">@vertexIndex</span>()
+    [
+      <span class="property">@vertexIndex</span>()
+      <span class="property">@vertexIndex</span>()
+      <span class="property">@vertexIndex</span>()
+    ]
 
   textures: -&gt;
     <span class="property">@model</span>.textures = (<span class="property">@texture</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
