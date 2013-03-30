@@ -22,6 +22,8 @@ class MMD.Loader
     request = new XMLHttpRequest()
     request.open('GET', @url)
     request.responseType = 'arraybuffer'
+    request.onreadystatechange = => @onreadystatechange(request)
     request.send()
-    request.onreadystatechange = =>
-      @callback(request.response) if request.readyState == 4
+
+  onreadystatechange: (request) ->
+    @callback(request.response) if request.readyState == 4

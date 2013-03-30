@@ -121,9 +121,11 @@ callback - a Function called with the response object</code></pre>
     request = <span class="keyword">new</span> XMLHttpRequest()
     request.open(<span class="string">'GET'</span>, <span class="property">@url</span>)
     request.responseType = <span class="string">'arraybuffer'</span>
+    request.<span class="function"><span class="title">onreadystatechange</span></span> = =&gt; <span class="property">@onreadystatechange</span>(request)
     request.send()
-    request.<span class="function"><span class="title">onreadystatechange</span></span> = =&gt;
-      <span class="property">@callback</span>(request.response) <span class="keyword">if</span> request.readyState == <span class="number">4</span></pre></div></div>
+
+  onreadystatechange: (request) -&gt;
+    <span class="property">@callback</span>(request.response) <span class="keyword">if</span> request.readyState == <span class="number">4</span></pre></div></div>
             
         </li>
         

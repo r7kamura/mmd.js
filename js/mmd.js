@@ -113,10 +113,14 @@
       request = new XMLHttpRequest();
       request.open('GET', this.url);
       request.responseType = 'arraybuffer';
-      request.send();
-      return request.onreadystatechange = function() {
-        if (request.readyState === 4) return _this.callback(request.response);
+      request.onreadystatechange = function() {
+        return _this.onreadystatechange(request);
       };
+      return request.send();
+    };
+
+    Loader.prototype.onreadystatechange = function(request) {
+      if (request.readyState === 4) return this.callback(request.response);
     };
 
     return Loader;
