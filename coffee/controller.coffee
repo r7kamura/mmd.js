@@ -64,19 +64,19 @@ class this.Controller
       geometry = new THREE.Geometry()
       geometry.vertices = [
         new THREE.Vector3(
-          @model.vertexes[face[0]].position[0] * enlargementFactor,
-          @model.vertexes[face[0]].position[1] * enlargementFactor,
-          @model.vertexes[face[0]].position[2] * enlargementFactor
+          @model.vertexes[face[0]].position.x * enlargementFactor,
+          @model.vertexes[face[0]].position.y * enlargementFactor,
+          @model.vertexes[face[0]].position.z * enlargementFactor
         ),
         new THREE.Vector3(
-          @model.vertexes[face[1]].position[0] * enlargementFactor,
-          @model.vertexes[face[1]].position[1] * enlargementFactor,
-          @model.vertexes[face[1]].position[2] * enlargementFactor
+          @model.vertexes[face[1]].position.x * enlargementFactor,
+          @model.vertexes[face[1]].position.y * enlargementFactor,
+          @model.vertexes[face[1]].position.z * enlargementFactor
         ),
         new THREE.Vector3(
-          @model.vertexes[face[2]].position[0] * enlargementFactor,
-          @model.vertexes[face[2]].position[1] * enlargementFactor,
-          @model.vertexes[face[2]].position[2] * enlargementFactor
+          @model.vertexes[face[2]].position.x * enlargementFactor,
+          @model.vertexes[face[2]].position.y * enlargementFactor,
+          @model.vertexes[face[2]].position.z * enlargementFactor
         ),
       ]
       geometry.faces.push(new THREE.Face3(0, 1, 2))

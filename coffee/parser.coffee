@@ -1,5 +1,14 @@
-# Parse PMX model data by Recursive Descendent Parsing.
+# Parse arrayBuffer as model data in PMX format by Recursive Descendent Parsing style.
 #
+# ### data type
+# The PMX format is binary data,
+# and it consists of an series of int8, int16, int32, uint8, uint16, and float32.
+#
+# ### encoding
+# The string in PMX format is encoded as UTF8 or UTF16LE.
+# Authors of PMX data can select one of them, and it is stored in the header segment.
+#
+# ### example
 # ```
 # parser = new Parser(arrayBuffer)
 # model  = parser.parse()
@@ -24,87 +33,112 @@ class this.Parser
     @pmx      = {}
 
   # Parse the model data and return a parsed data object.
+  # This function also represents the contents of PMX data.
   parse: ->
-    @modelData()
+    @pmx.name                  = @string(4)
+    @pmx.version               = @float()
+    @options.headerSize        = @uint8()
+    @options.useUtf8           = @uint8()
+    @options.extraUvSize       = @uint8()
+    @options.vertexIndexSize   = @uint8()
+    @options.textureIndexSize  = @uint8()
+    @options.materialIndexSize = @uint8()
+    @options.boneIndexSize     = @uint8()
+    @options.morphIndexSize    = @uint8()
+    @options.rigidIndexSize    = @uint8()
+    @model.name                = @text()
+    @model.nameEnglish         = @text()
+    @model.comment             = @text()
+    @model.commentEnglish      = @text()
+    @model.vertexes            = @arrayOf('vertex')
+    @model.faces               = @arrayOf('face', 3)
+    @model.textures            = @arrayOf('texture')
+    @model.materials           = @arrayOf('material')
+    @model.bones               = @arrayOf('bone')
+    @model.morphs              = @arrayOf('morph')
+    @model.frames              = @arrayOf('frame')
+    @model.rigids              = @arrayOf('rigid')
+    @model.joints              = @arrayOf('joint')
     @model
 
-  modelData: ->
-    @modelHeader()
-    @model.name           = @text()
-    @model.nameEnglish    = @text()
-    @model.comment        = @text()
-    @model.commentEnglish = @text()
-    @model.vertexes       = @vertexes()
-    @model.faces          = @faces()
-    @model.textures       = @textures()
-    @model.materials      = @materials()
-    @model.bones          = @bones()
-    @model.morphs         = @morphs()
-    @model.frames         = @frames()
-    @model.rigids         = @rigids()
-    @model.joints         = @joints()
-
-  byte: () ->
-    @uint8()
-
-  int: () ->
-    @int32()
-
+  # Consume 8bit as signed int.
   int8: () ->
     @index += 1
     @dataView.getInt8(@index - 1, true)
 
+  # Consume 16bit as signed int.
   int16: () ->
     @index += 2
     @dataView.getInt16(@index - 2, true)
 
+  # Consume 32bit as signed int.
   int32: () ->
     @index += 4
     @dataView.getInt32(@index - 4, true)
 
+  # Consume 8bit as unsigned int.
   uint8: () ->
     @index += 1
     @dataView.getUint8(@index - 1, true)
 
+  # Consume 16bit as unsigned int.
   uint16: () ->
     @index += 2
     @dataView.getUint16(@index - 2, true)
 
+  # Consume 32bit as float.
   float: () ->
     @index += 4
     @dataView.getFloat32(@index - 4, true)
 
+  # Consume 8bit and return a String as ASCII character.
   char: ()->
-    String.fromCharCode(@byte())
+    String.fromCharCode(@uint8())
 
+  # Return characters with a given size.
   chars: (size) ->
     @char() for [0...size]
 
+  # Return characters as a String with a given size.
+  string: (size) ->
+    @chars(size).join('')
+
+  # Return an Array of uint8 with a given size.
   bytes: (size) ->
-    @byte() for [0...size]
+    @uint8() for [0...@int32()]
 
-  floats: (size) ->
-    @float() for [0...size]
-
+  # Read a text block.
+  # A text block consists of a size segment and a content segment.
   text: ->
-    bytes = @bytes(@int())
+    bytes = @bytes()
     codes = (bytes[i] + bytes[i + 1] * 256 for i in [0...bytes.length] by 2)
     String.fromCharCode.apply(null, codes)
 
   xyz: ->
-    @floats(3)
+    x: @float()
+    y: @float()
+    z: @float()
 
   xyzw: ->
-    @floats(4)
+    x: @float()
+    y: @float()
+    z: @float()
+    w: @float()
 
   uv: ->
-    @floats(2)
+    u: @float()
+    v: @float()
 
   rgb: ->
-    @floats(3)
+    r: @float()
+    g: @float()
+    b: @float()
 
   rgba: ->
-    @floats(4)
+    r: @float()
+    g: @float()
+    b: @float()
+    a: @float()
 
   vertexIndex: ->
     switch @options.vertexIndexSize
@@ -142,33 +176,12 @@ class this.Parser
       when 2 then @int16()
       when 4 then @int32()
 
-  modelHeader: ->
-    @pmxName()
-    @pmxVersion()
-    @options = @modelStructureInformation()
-
-  pmxName: ->
-    @pmx.name = @chars(4).join('')
-
-  pmxVersion: ->
-    @pmx.version = @float()
-
-  modelStructureInformation: ->
-    @modelStructureInformationSize()
-    useUtf8: @byte()
-    extraUvSize: @byte()
-    vertexIndexSize: @byte()
-    textureIndexSize: @byte()
-    materialIndexSize: @byte()
-    boneIndexSize: @byte()
-    morphIndexSize: @byte()
-    rigidIndexSize: @byte()
-
-  modelStructureInformationSize: ->
-    @byte()
-
-  vertexes: ->
-    @model.vertexes = (@vertex() for [0...@int()])
+  # Read an Array of the given data type.
+  # For `faces`, we provide the `interval` option.
+  # The `dataType` is one of `vertex`, `faces`, `texture`,
+  # `material`, `bone`, `morph`, `frame`, `rigid`, `joint`.
+  arrayOf: (dataType, interval = 1) ->
+    @[dataType]() for [0...@int32() / interval]
 
   vertex: ->
     position: @xyz()
@@ -192,7 +205,7 @@ class this.Parser
       when 3 then @vertexWeightSdef()
 
   vertexWeightType: ->
-    @byte()
+    @uint8()
 
   vertexWeightBdef1: ->
     @boneIndex()
@@ -241,9 +254,6 @@ class this.Parser
   vertexEdgeRate: ->
     @float()
 
-  faces: ->
-    @model.faces = (@face() for [0...@int() / 3])
-
   face: ->
     [
       @vertexIndex()
@@ -251,17 +261,11 @@ class this.Parser
       @vertexIndex()
     ]
 
-  textures: ->
-    @model.textures = (@texture() for [0...@int()])
-
   texture: ->
     @texturePath()
 
   texturePath: ->
     @text()
-
-  materials: ->
-    @model.materials = (@material() for [0...@int()])
 
   material: ->
     name: @text()
@@ -270,23 +274,20 @@ class this.Parser
     specular: @rgb()
     specularFactor: @float()
     ambient: @rgb()
-    drawFlag: @byte()
+    drawFlag: @uint8()
     edgeColor: @rgba()
     edgeSize: @float()
     normalTexture: @textureIndex()
     sphereIndex: @textureIndex()
-    sphereMode: @byte()
+    sphereMode: @uint8()
     toonTexture: @materialToonTexture()
     memo: @text()
-    faceSize: @int()
+    faceSize: @int32()
 
   materialToonTexture: ->
-    switch @byte()
+    switch @uint8()
       when 0 then @textureIndex()
-      when 1 then @byte()
-
-  bones: ->
-    @model.bones = (@bone() for [0...@int()])
+      when 1 then @uint8()
 
   bone: ->
     object                 = {}
@@ -294,7 +295,7 @@ class this.Parser
     object.nameEnglish     = @text()
     object.position        = @xyz()
     object.parentBone      = @boneIndex()
-    object.transitionState = @int()
+    object.transitionState = @int32()
     object.flags           = flags = @boneFlags()
     object.destination     = if flags.specifiedByIndex then @boneIndex() else @xyz()
     object.addedBone       = @boneIndex() if flags.useAddedRotation || flags.useAddedTranslation
@@ -302,48 +303,45 @@ class this.Parser
     object.fixedAxis       = @xyz() if flags.useFixedAxis
     object.localAxisX      = @xyz() if flags.useLocalAxis
     object.localAxisZ      = @xyz() if flags.useLocalAxis
-    object.key             = @int() if flags.useParentTransform
+    object.key             = @int32() if flags.useParentTransform
     object.ikTargetBone    = @boneIndex() if flags.useIk
-    object.ikLoop          = @int() if flags.useIk
+    object.ikLoop          = @int32() if flags.useIk
     object.ikLimit         = @float() if flags.useIk
     object.ikLinks         = @boneLinks() if flags.useIk
     object
 
   boneFlags: ->
     bits = @uint16()
-    specifiedByIndex:     !!(bits & 1)
-    useRotation:          !!(bits & 2)
-    useTranslation:       !!(bits & 4)
-    displayed:            !!(bits & 8)
-    useControl:           !!(bits & 16)
-    useIk:                !!(bits & 32)
-    useAddedRotation:     !!(bits & 256)
-    useAddedTranslation:  !!(bits & 512)
-    useFixedAxis:         !!(bits & 1024)
-    useLocalAxis:         !!(bits & 2048)
-    usePhysicalTransform: !!(bits & 4096)
-    useParentTransform:   !!(bits & 8192)
+    specifiedByIndex:     !!(bits & 0x0001)
+    useRotation:          !!(bits & 0x0002)
+    useTranslation:       !!(bits & 0x0004)
+    displayed:            !!(bits & 0x0008)
+    useControl:           !!(bits & 0x0010)
+    useIk:                !!(bits & 0x0020)
+    useAddedRotation:     !!(bits & 0x0100)
+    useAddedTranslation:  !!(bits & 0x0200)
+    useFixedAxis:         !!(bits & 0x0400)
+    useLocalAxis:         !!(bits & 0x0800)
+    usePhysicalTransform: !!(bits & 0x1000)
+    useParentTransform:   !!(bits & 0x2000)
 
   boneLinks: ->
-    (@boneLink() for [0...@int()])
+    (@boneLink() for [0...@int32()])
 
   boneLink: ->
     bone    = @boneIndex()
-    limited = @byte()
+    limited = @uint8()
     bone: bone
     lowerLimit: @xyz() if limited
     upperLimit: @xyz() if limited
-
-  morphs: ->
-    @model.morphs = (@morph() for [0...@int()])
 
   morph: ->
     object              = {}
     object.name         = @text()
     object.nameEnglish  = @text()
-    object.controlPanel = @byte()
-    object.type         = @byte()
-    object.records      = (@morphRecord(object.type) for [0...@int()])
+    object.controlPanel = @uint8()
+    object.type         = @uint8()
+    object.records      = (@morphRecord(object.type) for [0...@int32()])
     object
 
   morphRecord: (type) ->
@@ -373,7 +371,7 @@ class this.Parser
 
   morphRecordMaterial: ->
     index: @materialIndex()
-    calculationType: @byte()
+    calculationType: @uint8()
     diffusion: @rgba()
     specular: @rgb()
     specularFactor: @float()
@@ -388,34 +386,28 @@ class this.Parser
     index: @morphIndex()
     rate: @float()
 
-  frames: ->
-    @model.frame = (@frame() for [0...@int()])
-
   frame: ->
     name: @text()
     nameEnglish: @text()
-    specialFrameFlag: @byte()
+    specialFrameFlag: @uint8()
     elements: @frameElements()
 
   frameElements: ->
-    @frameElement() for [0...@int()]
+    @frameElement() for [0...@int32()]
 
   frameElement: ->
-    if @byte()
+    if @uint8()
       @morphIndex()
     else
       @boneIndex()
-
-  rigids: ->
-    @model.rigid = (@rigid() for [0...@int()])
 
   rigid: ->
     name: @text()
     nameEnglish: @text()
     boneIndex: @boneIndex()
-    group: @byte()
+    group: @uint8()
     collisionGroupFlag: @uint16()
-    shape: @byte()
+    shape: @uint8()
     size: @xyz()
     position: @xyz()
     rotation: @xyz()
@@ -424,15 +416,12 @@ class this.Parser
     rotationDecay: @float()
     bounce: @float()
     friction: @float()
-    calculationType: @byte()
-
-  joints: ->
-    @model.joints = (@joint() for [0...@int()])
+    calculationType: @uint8()
 
   joint: ->
     name: @text()
     nameEnglish: @text()
-    type: @byte()
+    type: @uint8()
     rigidA: @rigidIndex()
     rigidB: @rigidIndex()
     position: @xyz()

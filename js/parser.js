@@ -11,33 +11,31 @@
     }
 
     Parser.prototype.parse = function() {
-      this.modelData();
-      return this.model;
-    };
-
-    Parser.prototype.modelData = function() {
-      this.modelHeader();
+      this.pmx.name = this.string(4);
+      this.pmx.version = this.float();
+      this.options.headerSize = this.uint8();
+      this.options.useUtf8 = this.uint8();
+      this.options.extraUvSize = this.uint8();
+      this.options.vertexIndexSize = this.uint8();
+      this.options.textureIndexSize = this.uint8();
+      this.options.materialIndexSize = this.uint8();
+      this.options.boneIndexSize = this.uint8();
+      this.options.morphIndexSize = this.uint8();
+      this.options.rigidIndexSize = this.uint8();
       this.model.name = this.text();
       this.model.nameEnglish = this.text();
       this.model.comment = this.text();
       this.model.commentEnglish = this.text();
-      this.model.vertexes = this.vertexes();
-      this.model.faces = this.faces();
-      this.model.textures = this.textures();
-      this.model.materials = this.materials();
-      this.model.bones = this.bones();
-      this.model.morphs = this.morphs();
-      this.model.frames = this.frames();
-      this.model.rigids = this.rigids();
-      return this.model.joints = this.joints();
-    };
-
-    Parser.prototype.byte = function() {
-      return this.uint8();
-    };
-
-    Parser.prototype.int = function() {
-      return this.int32();
+      this.model.vertexes = this.arrayOf('vertex');
+      this.model.faces = this.arrayOf('face', 3);
+      this.model.textures = this.arrayOf('texture');
+      this.model.materials = this.arrayOf('material');
+      this.model.bones = this.arrayOf('bone');
+      this.model.morphs = this.arrayOf('morph');
+      this.model.frames = this.arrayOf('frame');
+      this.model.rigids = this.arrayOf('rigid');
+      this.model.joints = this.arrayOf('joint');
+      return this.model;
     };
 
     Parser.prototype.int8 = function() {
@@ -71,7 +69,7 @@
     };
 
     Parser.prototype.char = function() {
-      return String.fromCharCode(this.byte());
+      return String.fromCharCode(this.uint8());
     };
 
     Parser.prototype.chars = function(size) {
@@ -83,27 +81,22 @@
       return _results;
     };
 
-    Parser.prototype.bytes = function(size) {
-      var _i, _results;
-      _results = [];
-      for (_i = 0; 0 <= size ? _i < size : _i > size; 0 <= size ? _i++ : _i--) {
-        _results.push(this.byte());
-      }
-      return _results;
+    Parser.prototype.string = function(size) {
+      return this.chars(size).join('');
     };
 
-    Parser.prototype.floats = function(size) {
-      var _i, _results;
+    Parser.prototype.bytes = function(size) {
+      var _i, _ref, _results;
       _results = [];
-      for (_i = 0; 0 <= size ? _i < size : _i > size; 0 <= size ? _i++ : _i--) {
-        _results.push(this.float());
+      for (_i = 0, _ref = this.int32(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
+        _results.push(this.uint8());
       }
       return _results;
     };
 
     Parser.prototype.text = function() {
       var bytes, codes, i;
-      bytes = this.bytes(this.int());
+      bytes = this.bytes();
       codes = (function() {
         var _ref, _results;
         _results = [];
@@ -116,23 +109,44 @@
     };
 
     Parser.prototype.xyz = function() {
-      return this.floats(3);
+      return {
+        x: this.float(),
+        y: this.float(),
+        z: this.float()
+      };
     };
 
     Parser.prototype.xyzw = function() {
-      return this.floats(4);
+      return {
+        x: this.float(),
+        y: this.float(),
+        z: this.float(),
+        w: this.float()
+      };
     };
 
     Parser.prototype.uv = function() {
-      return this.floats(2);
+      return {
+        u: this.float(),
+        v: this.float()
+      };
     };
 
     Parser.prototype.rgb = function() {
-      return this.floats(3);
+      return {
+        r: this.float(),
+        g: this.float(),
+        b: this.float()
+      };
     };
 
     Parser.prototype.rgba = function() {
-      return this.floats(4);
+      return {
+        r: this.float(),
+        g: this.float(),
+        b: this.float(),
+        a: this.float()
+      };
     };
 
     Parser.prototype.vertexIndex = function() {
@@ -201,47 +215,14 @@
       }
     };
 
-    Parser.prototype.modelHeader = function() {
-      this.pmxName();
-      this.pmxVersion();
-      return this.options = this.modelStructureInformation();
-    };
-
-    Parser.prototype.pmxName = function() {
-      return this.pmx.name = this.chars(4).join('');
-    };
-
-    Parser.prototype.pmxVersion = function() {
-      return this.pmx.version = this.float();
-    };
-
-    Parser.prototype.modelStructureInformation = function() {
-      this.modelStructureInformationSize();
-      return {
-        useUtf8: this.byte(),
-        extraUvSize: this.byte(),
-        vertexIndexSize: this.byte(),
-        textureIndexSize: this.byte(),
-        materialIndexSize: this.byte(),
-        boneIndexSize: this.byte(),
-        morphIndexSize: this.byte(),
-        rigidIndexSize: this.byte()
-      };
-    };
-
-    Parser.prototype.modelStructureInformationSize = function() {
-      return this.byte();
-    };
-
-    Parser.prototype.vertexes = function() {
-      return this.model.vertexes = (function() {
-        var _i, _ref, _results;
-        _results = [];
-        for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
-          _results.push(this.vertex());
-        }
-        return _results;
-      }).call(this);
+    Parser.prototype.arrayOf = function(dataType, interval) {
+      var _i, _ref, _results;
+      if (interval == null) interval = 1;
+      _results = [];
+      for (_i = 0, _ref = this.int32() / interval; 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
+        _results.push(this[dataType]());
+      }
+      return _results;
     };
 
     Parser.prototype.vertex = function() {
@@ -282,7 +263,7 @@
     };
 
     Parser.prototype.vertexWeightType = function() {
-      return this.byte();
+      return this.uint8();
     };
 
     Parser.prototype.vertexWeightBdef1 = function() {
@@ -321,30 +302,8 @@
       return this.float();
     };
 
-    Parser.prototype.faces = function() {
-      return this.model.faces = (function() {
-        var _i, _ref, _results;
-        _results = [];
-        for (_i = 0, _ref = this.int() / 3; 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
-          _results.push(this.face());
-        }
-        return _results;
-      }).call(this);
-    };
-
     Parser.prototype.face = function() {
       return [this.vertexIndex(), this.vertexIndex(), this.vertexIndex()];
-    };
-
-    Parser.prototype.textures = function() {
-      return this.model.textures = (function() {
-        var _i, _ref, _results;
-        _results = [];
-        for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
-          _results.push(this.texture());
-        }
-        return _results;
-      }).call(this);
     };
 
     Parser.prototype.texture = function() {
@@ -355,17 +314,6 @@
       return this.text();
     };
 
-    Parser.prototype.materials = function() {
-      return this.model.materials = (function() {
-        var _i, _ref, _results;
-        _results = [];
-        for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
-          _results.push(this.material());
-        }
-        return _results;
-      }).call(this);
-    };
-
     Parser.prototype.material = function() {
       return {
         name: this.text(),
@@ -374,36 +322,25 @@
         specular: this.rgb(),
         specularFactor: this.float(),
         ambient: this.rgb(),
-        drawFlag: this.byte(),
+        drawFlag: this.uint8(),
         edgeColor: this.rgba(),
         edgeSize: this.float(),
         normalTexture: this.textureIndex(),
         sphereIndex: this.textureIndex(),
-        sphereMode: this.byte(),
+        sphereMode: this.uint8(),
         toonTexture: this.materialToonTexture(),
         memo: this.text(),
-        faceSize: this.int()
+        faceSize: this.int32()
       };
     };
 
     Parser.prototype.materialToonTexture = function() {
-      switch (this.byte()) {
+      switch (this.uint8()) {
         case 0:
           return this.textureIndex();
         case 1:
-          return this.byte();
+          return this.uint8();
       }
-    };
-
-    Parser.prototype.bones = function() {
-      return this.model.bones = (function() {
-        var _i, _ref, _results;
-        _results = [];
-        for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
-          _results.push(this.bone());
-        }
-        return _results;
-      }).call(this);
     };
 
     Parser.prototype.bone = function() {
@@ -413,7 +350,7 @@
       object.nameEnglish = this.text();
       object.position = this.xyz();
       object.parentBone = this.boneIndex();
-      object.transitionState = this.int();
+      object.transitionState = this.int32();
       object.flags = flags = this.boneFlags();
       object.destination = flags.specifiedByIndex ? this.boneIndex() : this.xyz();
       if (flags.useAddedRotation || flags.useAddedTranslation) {
@@ -425,9 +362,9 @@
       if (flags.useFixedAxis) object.fixedAxis = this.xyz();
       if (flags.useLocalAxis) object.localAxisX = this.xyz();
       if (flags.useLocalAxis) object.localAxisZ = this.xyz();
-      if (flags.useParentTransform) object.key = this.int();
+      if (flags.useParentTransform) object.key = this.int32();
       if (flags.useIk) object.ikTargetBone = this.boneIndex();
-      if (flags.useIk) object.ikLoop = this.int();
+      if (flags.useIk) object.ikLoop = this.int32();
       if (flags.useIk) object.ikLimit = this.float();
       if (flags.useIk) object.ikLinks = this.boneLinks();
       return object;
@@ -437,25 +374,25 @@
       var bits;
       bits = this.uint16();
       return {
-        specifiedByIndex: !!(bits & 1),
-        useRotation: !!(bits & 2),
-        useTranslation: !!(bits & 4),
-        displayed: !!(bits & 8),
-        useControl: !!(bits & 16),
-        useIk: !!(bits & 32),
-        useAddedRotation: !!(bits & 256),
-        useAddedTranslation: !!(bits & 512),
-        useFixedAxis: !!(bits & 1024),
-        useLocalAxis: !!(bits & 2048),
-        usePhysicalTransform: !!(bits & 4096),
-        useParentTransform: !!(bits & 8192)
+        specifiedByIndex: !!(bits & 0x0001),
+        useRotation: !!(bits & 0x0002),
+        useTranslation: !!(bits & 0x0004),
+        displayed: !!(bits & 0x0008),
+        useControl: !!(bits & 0x0010),
+        useIk: !!(bits & 0x0020),
+        useAddedRotation: !!(bits & 0x0100),
+        useAddedTranslation: !!(bits & 0x0200),
+        useFixedAxis: !!(bits & 0x0400),
+        useLocalAxis: !!(bits & 0x0800),
+        usePhysicalTransform: !!(bits & 0x1000),
+        useParentTransform: !!(bits & 0x2000)
       };
     };
 
     Parser.prototype.boneLinks = function() {
       var _i, _ref, _results;
       _results = [];
-      for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
+      for (_i = 0, _ref = this.int32(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
         _results.push(this.boneLink());
       }
       return _results;
@@ -464,7 +401,7 @@
     Parser.prototype.boneLink = function() {
       var bone, limited;
       bone = this.boneIndex();
-      limited = this.byte();
+      limited = this.uint8();
       return {
         bone: bone,
         lowerLimit: limited ? this.xyz() : void 0,
@@ -472,28 +409,17 @@
       };
     };
 
-    Parser.prototype.morphs = function() {
-      return this.model.morphs = (function() {
-        var _i, _ref, _results;
-        _results = [];
-        for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
-          _results.push(this.morph());
-        }
-        return _results;
-      }).call(this);
-    };
-
     Parser.prototype.morph = function() {
       var object;
       object = {};
       object.name = this.text();
       object.nameEnglish = this.text();
-      object.controlPanel = this.byte();
-      object.type = this.byte();
+      object.controlPanel = this.uint8();
+      object.type = this.uint8();
       object.records = (function() {
         var _i, _ref, _results;
         _results = [];
-        for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
+        for (_i = 0, _ref = this.int32(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
           _results.push(this.morphRecord(object.type));
         }
         return _results;
@@ -549,7 +475,7 @@
     Parser.prototype.morphRecordMaterial = function() {
       return {
         index: this.materialIndex(),
-        calculationType: this.byte(),
+        calculationType: this.uint8(),
         diffusion: this.rgba(),
         specular: this.rgb(),
         specularFactor: this.float(),
@@ -569,22 +495,11 @@
       };
     };
 
-    Parser.prototype.frames = function() {
-      return this.model.frame = (function() {
-        var _i, _ref, _results;
-        _results = [];
-        for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
-          _results.push(this.frame());
-        }
-        return _results;
-      }).call(this);
-    };
-
     Parser.prototype.frame = function() {
       return {
         name: this.text(),
         nameEnglish: this.text(),
-        specialFrameFlag: this.byte(),
+        specialFrameFlag: this.uint8(),
         elements: this.frameElements()
       };
     };
@@ -592,29 +507,18 @@
     Parser.prototype.frameElements = function() {
       var _i, _ref, _results;
       _results = [];
-      for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
+      for (_i = 0, _ref = this.int32(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
         _results.push(this.frameElement());
       }
       return _results;
     };
 
     Parser.prototype.frameElement = function() {
-      if (this.byte()) {
+      if (this.uint8()) {
         return this.morphIndex();
       } else {
         return this.boneIndex();
       }
-    };
-
-    Parser.prototype.rigids = function() {
-      return this.model.rigid = (function() {
-        var _i, _ref, _results;
-        _results = [];
-        for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
-          _results.push(this.rigid());
-        }
-        return _results;
-      }).call(this);
     };
 
     Parser.prototype.rigid = function() {
@@ -622,9 +526,9 @@
         name: this.text(),
         nameEnglish: this.text(),
         boneIndex: this.boneIndex(),
-        group: this.byte(),
+        group: this.uint8(),
         collisionGroupFlag: this.uint16(),
-        shape: this.byte(),
+        shape: this.uint8(),
         size: this.xyz(),
         position: this.xyz(),
         rotation: this.xyz(),
@@ -633,26 +537,15 @@
         rotationDecay: this.float(),
         bounce: this.float(),
         friction: this.float(),
-        calculationType: this.byte()
+        calculationType: this.uint8()
       };
-    };
-
-    Parser.prototype.joints = function() {
-      return this.model.joints = (function() {
-        var _i, _ref, _results;
-        _results = [];
-        for (_i = 0, _ref = this.int(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
-          _results.push(this.joint());
-        }
-        return _results;
-      }).call(this);
     };
 
     Parser.prototype.joint = function() {
       return {
         name: this.text(),
         nameEnglish: this.text(),
-        type: this.byte(),
+        type: this.uint8(),
         rigidA: this.rigidIndex(),
         rigidB: this.rigidIndex(),
         position: this.xyz(),

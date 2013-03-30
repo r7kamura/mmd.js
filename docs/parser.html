@@ -63,7 +63,14 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <p>Parse PMX model data by Recursive Descendent Parsing.</p>
+              <p>Parse arrayBuffer as model data in PMX format by Recursive Descendent Parsing style.</p>
+<h3>data type</h3>
+<p>The PMX format is binary data,
+and it consists of an series of int8, int16, int32, uint8, uint16, and float32.</p>
+<h3>encoding</h3>
+<p>The string in PMX format is encoded as UTF8 or UTF16LE.
+Authors of PMX data can select one of them, and it is stored in the header segment.</p>
+<h3>example</h3>
 <pre><code>parser = new Parser(arrayBuffer)
 model  = parser.parse()</code></pre>
 
@@ -106,91 +113,248 @@ model  = parser.parse()</code></pre>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Parse the model data and return a parsed data object.</p>
+              <p>Parse the model data and return a parsed data object.
+This function also represents the contents of PMX data.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>  parse: -&gt;
-    <span class="property">@modelData</span>()
-    <span class="property">@model</span>
+    <span class="property">@pmx</span>.name                  = <span class="property">@string</span>(<span class="number">4</span>)
+    <span class="property">@pmx</span>.version               = <span class="property">@float</span>()
+    <span class="property">@options</span>.headerSize        = <span class="property">@uint8</span>()
+    <span class="property">@options</span>.useUtf8           = <span class="property">@uint8</span>()
+    <span class="property">@options</span>.extraUvSize       = <span class="property">@uint8</span>()
+    <span class="property">@options</span>.vertexIndexSize   = <span class="property">@uint8</span>()
+    <span class="property">@options</span>.textureIndexSize  = <span class="property">@uint8</span>()
+    <span class="property">@options</span>.materialIndexSize = <span class="property">@uint8</span>()
+    <span class="property">@options</span>.boneIndexSize     = <span class="property">@uint8</span>()
+    <span class="property">@options</span>.morphIndexSize    = <span class="property">@uint8</span>()
+    <span class="property">@options</span>.rigidIndexSize    = <span class="property">@uint8</span>()
+    <span class="property">@model</span>.name                = <span class="property">@text</span>()
+    <span class="property">@model</span>.nameEnglish         = <span class="property">@text</span>()
+    <span class="property">@model</span>.comment             = <span class="property">@text</span>()
+    <span class="property">@model</span>.commentEnglish      = <span class="property">@text</span>()
+    <span class="property">@model</span>.vertexes            = <span class="property">@arrayOf</span>(<span class="string">'vertex'</span>)
+    <span class="property">@model</span>.faces               = <span class="property">@arrayOf</span>(<span class="string">'face'</span>, <span class="number">3</span>)
+    <span class="property">@model</span>.textures            = <span class="property">@arrayOf</span>(<span class="string">'texture'</span>)
+    <span class="property">@model</span>.materials           = <span class="property">@arrayOf</span>(<span class="string">'material'</span>)
+    <span class="property">@model</span>.bones               = <span class="property">@arrayOf</span>(<span class="string">'bone'</span>)
+    <span class="property">@model</span>.morphs              = <span class="property">@arrayOf</span>(<span class="string">'morph'</span>)
+    <span class="property">@model</span>.frames              = <span class="property">@arrayOf</span>(<span class="string">'frame'</span>)
+    <span class="property">@model</span>.rigids              = <span class="property">@arrayOf</span>(<span class="string">'rigid'</span>)
+    <span class="property">@model</span>.joints              = <span class="property">@arrayOf</span>(<span class="string">'joint'</span>)
+    <span class="property">@model</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Consume 8bit as signed int.</p>
 
-  modelData: -&gt;
-    <span class="property">@modelHeader</span>()
-    <span class="property">@model</span>.name           = <span class="property">@text</span>()
-    <span class="property">@model</span>.nameEnglish    = <span class="property">@text</span>()
-    <span class="property">@model</span>.comment        = <span class="property">@text</span>()
-    <span class="property">@model</span>.commentEnglish = <span class="property">@text</span>()
-    <span class="property">@model</span>.vertexes       = <span class="property">@vertexes</span>()
-    <span class="property">@model</span>.faces          = <span class="property">@faces</span>()
-    <span class="property">@model</span>.textures       = <span class="property">@textures</span>()
-    <span class="property">@model</span>.materials      = <span class="property">@materials</span>()
-    <span class="property">@model</span>.bones          = <span class="property">@bones</span>()
-    <span class="property">@model</span>.morphs         = <span class="property">@morphs</span>()
-    <span class="property">@model</span>.frames         = <span class="property">@frames</span>()
-    <span class="property">@model</span>.rigids         = <span class="property">@rigids</span>()
-    <span class="property">@model</span>.joints         = <span class="property">@joints</span>()
-
-  byte: () -&gt;
-    <span class="property">@uint8</span>()
-
-  int: () -&gt;
-    <span class="property">@int32</span>()
-
-  int8: () -&gt;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  int8: () -&gt;
     <span class="property">@index</span> += <span class="number">1</span>
-    <span class="property">@dataView</span>.getInt8(<span class="property">@index</span> - <span class="number">1</span>, <span class="literal">true</span>)
+    <span class="property">@dataView</span>.getInt8(<span class="property">@index</span> - <span class="number">1</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Consume 16bit as signed int.</p>
 
-  int16: () -&gt;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  int16: () -&gt;
     <span class="property">@index</span> += <span class="number">2</span>
-    <span class="property">@dataView</span>.getInt16(<span class="property">@index</span> - <span class="number">2</span>, <span class="literal">true</span>)
+    <span class="property">@dataView</span>.getInt16(<span class="property">@index</span> - <span class="number">2</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Consume 32bit as signed int.</p>
 
-  int32: () -&gt;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  int32: () -&gt;
     <span class="property">@index</span> += <span class="number">4</span>
-    <span class="property">@dataView</span>.getInt32(<span class="property">@index</span> - <span class="number">4</span>, <span class="literal">true</span>)
+    <span class="property">@dataView</span>.getInt32(<span class="property">@index</span> - <span class="number">4</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Consume 8bit as unsigned int.</p>
 
-  uint8: () -&gt;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  uint8: () -&gt;
     <span class="property">@index</span> += <span class="number">1</span>
-    <span class="property">@dataView</span>.getUint8(<span class="property">@index</span> - <span class="number">1</span>, <span class="literal">true</span>)
+    <span class="property">@dataView</span>.getUint8(<span class="property">@index</span> - <span class="number">1</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Consume 16bit as unsigned int.</p>
 
-  uint16: () -&gt;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  uint16: () -&gt;
     <span class="property">@index</span> += <span class="number">2</span>
-    <span class="property">@dataView</span>.getUint16(<span class="property">@index</span> - <span class="number">2</span>, <span class="literal">true</span>)
+    <span class="property">@dataView</span>.getUint16(<span class="property">@index</span> - <span class="number">2</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Consume 32bit as float.</p>
 
-  float: () -&gt;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  float: () -&gt;
     <span class="property">@index</span> += <span class="number">4</span>
-    <span class="property">@dataView</span>.getFloat32(<span class="property">@index</span> - <span class="number">4</span>, <span class="literal">true</span>)
+    <span class="property">@dataView</span>.getFloat32(<span class="property">@index</span> - <span class="number">4</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Consume 8bit and return a String as ASCII character.</p>
 
-  char: ()-&gt;
-    String.fromCharCode(<span class="property">@byte</span>())
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  char: ()-&gt;
+    String.fromCharCode(<span class="property">@uint8</span>())</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Return characters with a given size.</p>
 
-  chars: (size) -&gt;
-    <span class="property">@char</span>() <span class="keyword">for</span> [<span class="number">0.</span>..size]
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  chars: (size) -&gt;
+    <span class="property">@char</span>() <span class="keyword">for</span> [<span class="number">0.</span>..size]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Return characters as a String with a given size.</p>
 
-  bytes: (size) -&gt;
-    <span class="property">@byte</span>() <span class="keyword">for</span> [<span class="number">0.</span>..size]
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  string: (size) -&gt;
+    <span class="property">@chars</span>(size).join(<span class="string">''</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Return an Array of uint8 with a given size.</p>
 
-  floats: (size) -&gt;
-    <span class="property">@float</span>() <span class="keyword">for</span> [<span class="number">0.</span>..size]
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  bytes: (size) -&gt;
+    <span class="property">@uint8</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int32</span>()]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Read a text block.
+A text block consists of a size segment and a content segment.</p>
 
-  text: -&gt;
-    bytes = <span class="property">@bytes</span>(<span class="property">@int</span>())
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  text: -&gt;
+    bytes = <span class="property">@bytes</span>()
     codes = (bytes[i] + bytes[i + <span class="number">1</span>] * <span class="number">256</span> <span class="keyword">for</span> i <span class="keyword">in</span> [<span class="number">0.</span>..bytes.length] <span class="keyword">by</span> <span class="number">2</span>)
     String.fromCharCode.apply(<span class="literal">null</span>, codes)
 
   xyz: -&gt;
-    <span class="property">@floats</span>(<span class="number">3</span>)
+    x: <span class="property">@float</span>()
+    y: <span class="property">@float</span>()
+    z: <span class="property">@float</span>()
 
   xyzw: -&gt;
-    <span class="property">@floats</span>(<span class="number">4</span>)
+    x: <span class="property">@float</span>()
+    y: <span class="property">@float</span>()
+    z: <span class="property">@float</span>()
+    w: <span class="property">@float</span>()
 
   uv: -&gt;
-    <span class="property">@floats</span>(<span class="number">2</span>)
+    u: <span class="property">@float</span>()
+    v: <span class="property">@float</span>()
 
   rgb: -&gt;
-    <span class="property">@floats</span>(<span class="number">3</span>)
+    r: <span class="property">@float</span>()
+    g: <span class="property">@float</span>()
+    b: <span class="property">@float</span>()
 
   rgba: -&gt;
-    <span class="property">@floats</span>(<span class="number">4</span>)
+    r: <span class="property">@float</span>()
+    g: <span class="property">@float</span>()
+    b: <span class="property">@float</span>()
+    a: <span class="property">@float</span>()
 
   vertexIndex: -&gt;
     <span class="keyword">switch</span> <span class="property">@options</span>.vertexIndexSize
@@ -226,35 +390,26 @@ model  = parser.parse()</code></pre>
     <span class="keyword">switch</span> <span class="property">@options</span>.rigidIndexSize
       <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@int8</span>()
       <span class="keyword">when</span> <span class="number">2</span> <span class="keyword">then</span> <span class="property">@int16</span>()
-      <span class="keyword">when</span> <span class="number">4</span> <span class="keyword">then</span> <span class="property">@int32</span>()
+      <span class="keyword">when</span> <span class="number">4</span> <span class="keyword">then</span> <span class="property">@int32</span>()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Read an Array of the given data type.
+For <code>faces</code>, we provide the <code>interval</code> option.
+The <code>dataType</code> is one of <code>vertex</code>, <code>faces</code>, <code>texture</code>,
+<code>material</code>, <code>bone</code>, <code>morph</code>, <code>frame</code>, <code>rigid</code>, <code>joint</code>.</p>
 
-  modelHeader: -&gt;
-    <span class="property">@pmxName</span>()
-    <span class="property">@pmxVersion</span>()
-    <span class="property">@options</span> = <span class="property">@modelStructureInformation</span>()
-
-  pmxName: -&gt;
-    <span class="property">@pmx</span>.name = <span class="property">@chars</span>(<span class="number">4</span>).join(<span class="string">''</span>)
-
-  pmxVersion: -&gt;
-    <span class="property">@pmx</span>.version = <span class="property">@float</span>()
-
-  modelStructureInformation: -&gt;
-    <span class="property">@modelStructureInformationSize</span>()
-    useUtf8: <span class="property">@byte</span>()
-    extraUvSize: <span class="property">@byte</span>()
-    vertexIndexSize: <span class="property">@byte</span>()
-    textureIndexSize: <span class="property">@byte</span>()
-    materialIndexSize: <span class="property">@byte</span>()
-    boneIndexSize: <span class="property">@byte</span>()
-    morphIndexSize: <span class="property">@byte</span>()
-    rigidIndexSize: <span class="property">@byte</span>()
-
-  modelStructureInformationSize: -&gt;
-    <span class="property">@byte</span>()
-
-  vertexes: -&gt;
-    <span class="property">@model</span>.vertexes = (<span class="property">@vertex</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  arrayOf: (dataType, interval = <span class="number">1</span>) -&gt;
+    @[dataType]() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int32</span>() / interval]
 
   vertex: -&gt;
     position: <span class="property">@xyz</span>()
@@ -278,7 +433,7 @@ model  = parser.parse()</code></pre>
       <span class="keyword">when</span> <span class="number">3</span> <span class="keyword">then</span> <span class="property">@vertexWeightSdef</span>()
 
   vertexWeightType: -&gt;
-    <span class="property">@byte</span>()
+    <span class="property">@uint8</span>()
 
   vertexWeightBdef1: -&gt;
     <span class="property">@boneIndex</span>()
@@ -327,9 +482,6 @@ model  = parser.parse()</code></pre>
   vertexEdgeRate: -&gt;
     <span class="property">@float</span>()
 
-  faces: -&gt;
-    <span class="property">@model</span>.faces = (<span class="property">@face</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>() / <span class="number">3</span>])
-
   face: -&gt;
     [
       <span class="property">@vertexIndex</span>()
@@ -337,17 +489,11 @@ model  = parser.parse()</code></pre>
       <span class="property">@vertexIndex</span>()
     ]
 
-  textures: -&gt;
-    <span class="property">@model</span>.textures = (<span class="property">@texture</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
-
   texture: -&gt;
     <span class="property">@texturePath</span>()
 
   texturePath: -&gt;
     <span class="property">@text</span>()
-
-  materials: -&gt;
-    <span class="property">@model</span>.materials = (<span class="property">@material</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
 
   material: -&gt;
     name: <span class="property">@text</span>()
@@ -356,23 +502,20 @@ model  = parser.parse()</code></pre>
     specular: <span class="property">@rgb</span>()
     specularFactor: <span class="property">@float</span>()
     ambient: <span class="property">@rgb</span>()
-    drawFlag: <span class="property">@byte</span>()
+    drawFlag: <span class="property">@uint8</span>()
     edgeColor: <span class="property">@rgba</span>()
     edgeSize: <span class="property">@float</span>()
     normalTexture: <span class="property">@textureIndex</span>()
     sphereIndex: <span class="property">@textureIndex</span>()
-    sphereMode: <span class="property">@byte</span>()
+    sphereMode: <span class="property">@uint8</span>()
     toonTexture: <span class="property">@materialToonTexture</span>()
     memo: <span class="property">@text</span>()
-    faceSize: <span class="property">@int</span>()
+    faceSize: <span class="property">@int32</span>()
 
   materialToonTexture: -&gt;
-    <span class="keyword">switch</span> <span class="property">@byte</span>()
+    <span class="keyword">switch</span> <span class="property">@uint8</span>()
       <span class="keyword">when</span> <span class="number">0</span> <span class="keyword">then</span> <span class="property">@textureIndex</span>()
-      <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@byte</span>()
-
-  bones: -&gt;
-    <span class="property">@model</span>.bones = (<span class="property">@bone</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+      <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@uint8</span>()
 
   bone: -&gt;
     object                 = {}
@@ -380,7 +523,7 @@ model  = parser.parse()</code></pre>
     object.nameEnglish     = <span class="property">@text</span>()
     object.position        = <span class="property">@xyz</span>()
     object.parentBone      = <span class="property">@boneIndex</span>()
-    object.transitionState = <span class="property">@int</span>()
+    object.transitionState = <span class="property">@int32</span>()
     object.flags           = flags = <span class="property">@boneFlags</span>()
     object.destination     = <span class="keyword">if</span> flags.specifiedByIndex <span class="keyword">then</span> <span class="property">@boneIndex</span>() <span class="keyword">else</span> <span class="property">@xyz</span>()
     object.addedBone       = <span class="property">@boneIndex</span>() <span class="keyword">if</span> flags.useAddedRotation || flags.useAddedTranslation
@@ -388,48 +531,45 @@ model  = parser.parse()</code></pre>
     object.fixedAxis       = <span class="property">@xyz</span>() <span class="keyword">if</span> flags.useFixedAxis
     object.localAxisX      = <span class="property">@xyz</span>() <span class="keyword">if</span> flags.useLocalAxis
     object.localAxisZ      = <span class="property">@xyz</span>() <span class="keyword">if</span> flags.useLocalAxis
-    object.key             = <span class="property">@int</span>() <span class="keyword">if</span> flags.useParentTransform
+    object.key             = <span class="property">@int32</span>() <span class="keyword">if</span> flags.useParentTransform
     object.ikTargetBone    = <span class="property">@boneIndex</span>() <span class="keyword">if</span> flags.useIk
-    object.ikLoop          = <span class="property">@int</span>() <span class="keyword">if</span> flags.useIk
+    object.ikLoop          = <span class="property">@int32</span>() <span class="keyword">if</span> flags.useIk
     object.ikLimit         = <span class="property">@float</span>() <span class="keyword">if</span> flags.useIk
     object.ikLinks         = <span class="property">@boneLinks</span>() <span class="keyword">if</span> flags.useIk
     object
 
   boneFlags: -&gt;
     bits = <span class="property">@uint16</span>()
-    specifiedByIndex:     !!(bits &amp; <span class="number">1</span>)
-    useRotation:          !!(bits &amp; <span class="number">2</span>)
-    useTranslation:       !!(bits &amp; <span class="number">4</span>)
-    displayed:            !!(bits &amp; <span class="number">8</span>)
-    useControl:           !!(bits &amp; <span class="number">16</span>)
-    useIk:                !!(bits &amp; <span class="number">32</span>)
-    useAddedRotation:     !!(bits &amp; <span class="number">256</span>)
-    useAddedTranslation:  !!(bits &amp; <span class="number">512</span>)
-    useFixedAxis:         !!(bits &amp; <span class="number">1024</span>)
-    useLocalAxis:         !!(bits &amp; <span class="number">2048</span>)
-    usePhysicalTransform: !!(bits &amp; <span class="number">4096</span>)
-    useParentTransform:   !!(bits &amp; <span class="number">8192</span>)
+    specifiedByIndex:     !!(bits &amp; <span class="number">0x0001</span>)
+    useRotation:          !!(bits &amp; <span class="number">0x0002</span>)
+    useTranslation:       !!(bits &amp; <span class="number">0x0004</span>)
+    displayed:            !!(bits &amp; <span class="number">0x0008</span>)
+    useControl:           !!(bits &amp; <span class="number">0x0010</span>)
+    useIk:                !!(bits &amp; <span class="number">0x0020</span>)
+    useAddedRotation:     !!(bits &amp; <span class="number">0x0100</span>)
+    useAddedTranslation:  !!(bits &amp; <span class="number">0x0200</span>)
+    useFixedAxis:         !!(bits &amp; <span class="number">0x0400</span>)
+    useLocalAxis:         !!(bits &amp; <span class="number">0x0800</span>)
+    usePhysicalTransform: !!(bits &amp; <span class="number">0x1000</span>)
+    useParentTransform:   !!(bits &amp; <span class="number">0x2000</span>)
 
   boneLinks: -&gt;
-    (<span class="property">@boneLink</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+    (<span class="property">@boneLink</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int32</span>()])
 
   boneLink: -&gt;
     bone    = <span class="property">@boneIndex</span>()
-    limited = <span class="property">@byte</span>()
+    limited = <span class="property">@uint8</span>()
     bone: bone
     lowerLimit: <span class="property">@xyz</span>() <span class="keyword">if</span> limited
     upperLimit: <span class="property">@xyz</span>() <span class="keyword">if</span> limited
-
-  morphs: -&gt;
-    <span class="property">@model</span>.morphs = (<span class="property">@morph</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
 
   morph: -&gt;
     object              = {}
     object.name         = <span class="property">@text</span>()
     object.nameEnglish  = <span class="property">@text</span>()
-    object.controlPanel = <span class="property">@byte</span>()
-    object.type         = <span class="property">@byte</span>()
-    object.records      = (<span class="property">@morphRecord</span>(object.type) <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+    object.controlPanel = <span class="property">@uint8</span>()
+    object.type         = <span class="property">@uint8</span>()
+    object.records      = (<span class="property">@morphRecord</span>(object.type) <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int32</span>()])
     object
 
   morphRecord: (type) -&gt;
@@ -459,7 +599,7 @@ model  = parser.parse()</code></pre>
 
   morphRecordMaterial: -&gt;
     index: <span class="property">@materialIndex</span>()
-    calculationType: <span class="property">@byte</span>()
+    calculationType: <span class="property">@uint8</span>()
     diffusion: <span class="property">@rgba</span>()
     specular: <span class="property">@rgb</span>()
     specularFactor: <span class="property">@float</span>()
@@ -474,34 +614,28 @@ model  = parser.parse()</code></pre>
     index: <span class="property">@morphIndex</span>()
     rate: <span class="property">@float</span>()
 
-  frames: -&gt;
-    <span class="property">@model</span>.frame = (<span class="property">@frame</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
-
   frame: -&gt;
     name: <span class="property">@text</span>()
     nameEnglish: <span class="property">@text</span>()
-    specialFrameFlag: <span class="property">@byte</span>()
+    specialFrameFlag: <span class="property">@uint8</span>()
     elements: <span class="property">@frameElements</span>()
 
   frameElements: -&gt;
-    <span class="property">@frameElement</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()]
+    <span class="property">@frameElement</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int32</span>()]
 
   frameElement: -&gt;
-    <span class="keyword">if</span> <span class="property">@byte</span>()
+    <span class="keyword">if</span> <span class="property">@uint8</span>()
       <span class="property">@morphIndex</span>()
     <span class="keyword">else</span>
       <span class="property">@boneIndex</span>()
-
-  rigids: -&gt;
-    <span class="property">@model</span>.rigid = (<span class="property">@rigid</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
 
   rigid: -&gt;
     name: <span class="property">@text</span>()
     nameEnglish: <span class="property">@text</span>()
     boneIndex: <span class="property">@boneIndex</span>()
-    group: <span class="property">@byte</span>()
+    group: <span class="property">@uint8</span>()
     collisionGroupFlag: <span class="property">@uint16</span>()
-    shape: <span class="property">@byte</span>()
+    shape: <span class="property">@uint8</span>()
     size: <span class="property">@xyz</span>()
     position: <span class="property">@xyz</span>()
     rotation: <span class="property">@xyz</span>()
@@ -510,15 +644,12 @@ model  = parser.parse()</code></pre>
     rotationDecay: <span class="property">@float</span>()
     bounce: <span class="property">@float</span>()
     friction: <span class="property">@float</span>()
-    calculationType: <span class="property">@byte</span>()
-
-  joints: -&gt;
-    <span class="property">@model</span>.joints = (<span class="property">@joint</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@int</span>()])
+    calculationType: <span class="property">@uint8</span>()
 
   joint: -&gt;
     name: <span class="property">@text</span>()
     nameEnglish: <span class="property">@text</span>()
-    type: <span class="property">@byte</span>()
+    type: <span class="property">@uint8</span>()
     rigidA: <span class="property">@rigidIndex</span>()
     rigidB: <span class="property">@rigidIndex</span>()
     position: <span class="property">@xyz</span>()
