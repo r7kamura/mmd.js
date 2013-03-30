@@ -63,16 +63,72 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              
+              <p>Parse PMX model data by Recursive Descendent Parsing.</p>
+<pre><code>parser = new Parser(arrayBuffer)
+model  = parser.parse()</code></pre>
+
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">this</span>.<span class="title">Parser</span></span>
-  constructor: (arrayBuffer) -&gt;
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">this</span>.<span class="title">Parser</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>The constructor.</p>
+<pre><code>arrayBuffer - ArrayBuffer of binary model data
+@dataView   - DataView object to read ArrayBuffer
+@index      - Integer of a position for DataView
+@model      - Object of parsed model data
+@options    - Object of parsed metadata
+@pmx        - Object of parsed PMX metadata</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  constructor: (arrayBuffer) -&gt;
     <span class="property">@dataView</span> = <span class="keyword">new</span> DataView(arrayBuffer)
     <span class="property">@index</span>    = <span class="number">0</span>
     <span class="property">@model</span>    = {}
     <span class="property">@options</span>  = {}
-    <span class="property">@pmx</span>      = {}
+    <span class="property">@pmx</span>      = {}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Parse the model data and return a parsed data object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  parse: -&gt;
+    <span class="property">@modelData</span>()
+    <span class="property">@model</span>
+
+  modelData: -&gt;
+    <span class="property">@modelHeader</span>()
+    <span class="property">@model</span>.name           = <span class="property">@text</span>()
+    <span class="property">@model</span>.nameEnglish    = <span class="property">@text</span>()
+    <span class="property">@model</span>.comment        = <span class="property">@text</span>()
+    <span class="property">@model</span>.commentEnglish = <span class="property">@text</span>()
+    <span class="property">@model</span>.vertexes       = <span class="property">@vertexes</span>()
+    <span class="property">@model</span>.faces          = <span class="property">@faces</span>()
+    <span class="property">@model</span>.textures       = <span class="property">@textures</span>()
+    <span class="property">@model</span>.materials      = <span class="property">@materials</span>()
+    <span class="property">@model</span>.bones          = <span class="property">@bones</span>()
+    <span class="property">@model</span>.morphs         = <span class="property">@morphs</span>()
+    <span class="property">@model</span>.frames         = <span class="property">@frames</span>()
+    <span class="property">@model</span>.rigids         = <span class="property">@rigids</span>()
+    <span class="property">@model</span>.joints         = <span class="property">@joints</span>()
 
   byte: () -&gt;
     <span class="property">@uint8</span>()
@@ -171,26 +227,6 @@
       <span class="keyword">when</span> <span class="number">1</span> <span class="keyword">then</span> <span class="property">@int8</span>()
       <span class="keyword">when</span> <span class="number">2</span> <span class="keyword">then</span> <span class="property">@int16</span>()
       <span class="keyword">when</span> <span class="number">4</span> <span class="keyword">then</span> <span class="property">@int32</span>()
-
-  parse: -&gt;
-    <span class="property">@modelData</span>()
-    <span class="property">@model</span>
-
-  modelData: -&gt;
-    <span class="property">@modelHeader</span>()
-    <span class="property">@model</span>.name           = <span class="property">@text</span>()
-    <span class="property">@model</span>.nameEnglish    = <span class="property">@text</span>()
-    <span class="property">@model</span>.comment        = <span class="property">@text</span>()
-    <span class="property">@model</span>.commentEnglish = <span class="property">@text</span>()
-    <span class="property">@model</span>.vertexes       = <span class="property">@vertexes</span>()
-    <span class="property">@model</span>.faces          = <span class="property">@faces</span>()
-    <span class="property">@model</span>.textures       = <span class="property">@textures</span>()
-    <span class="property">@model</span>.materials      = <span class="property">@materials</span>()
-    <span class="property">@model</span>.bones          = <span class="property">@bones</span>()
-    <span class="property">@model</span>.morphs         = <span class="property">@morphs</span>()
-    <span class="property">@model</span>.frames         = <span class="property">@frames</span>()
-    <span class="property">@model</span>.rigids         = <span class="property">@rigids</span>()
-    <span class="property">@model</span>.joints         = <span class="property">@joints</span>()
 
   modelHeader: -&gt;
     <span class="property">@pmxName</span>()

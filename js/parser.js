@@ -10,6 +10,28 @@
       this.pmx = {};
     }
 
+    Parser.prototype.parse = function() {
+      this.modelData();
+      return this.model;
+    };
+
+    Parser.prototype.modelData = function() {
+      this.modelHeader();
+      this.model.name = this.text();
+      this.model.nameEnglish = this.text();
+      this.model.comment = this.text();
+      this.model.commentEnglish = this.text();
+      this.model.vertexes = this.vertexes();
+      this.model.faces = this.faces();
+      this.model.textures = this.textures();
+      this.model.materials = this.materials();
+      this.model.bones = this.bones();
+      this.model.morphs = this.morphs();
+      this.model.frames = this.frames();
+      this.model.rigids = this.rigids();
+      return this.model.joints = this.joints();
+    };
+
     Parser.prototype.byte = function() {
       return this.uint8();
     };
@@ -177,28 +199,6 @@
         case 4:
           return this.int32();
       }
-    };
-
-    Parser.prototype.parse = function() {
-      this.modelData();
-      return this.model;
-    };
-
-    Parser.prototype.modelData = function() {
-      this.modelHeader();
-      this.model.name = this.text();
-      this.model.nameEnglish = this.text();
-      this.model.comment = this.text();
-      this.model.commentEnglish = this.text();
-      this.model.vertexes = this.vertexes();
-      this.model.faces = this.faces();
-      this.model.textures = this.textures();
-      this.model.materials = this.materials();
-      this.model.bones = this.bones();
-      this.model.morphs = this.morphs();
-      this.model.frames = this.frames();
-      this.model.rigids = this.rigids();
-      return this.model.joints = this.joints();
     };
 
     Parser.prototype.modelHeader = function() {

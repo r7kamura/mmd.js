@@ -1,10 +1,48 @@
+# Parse PMX model data by Recursive Descendent Parsing.
+#
+# ```
+# parser = new Parser(arrayBuffer)
+# model  = parser.parse()
+# ```
 class this.Parser
+
+  # The constructor.
+  #
+  # ```
+  # arrayBuffer - ArrayBuffer of binary model data
+  # @dataView   - DataView object to read ArrayBuffer
+  # @index      - Integer of a position for DataView
+  # @model      - Object of parsed model data
+  # @options    - Object of parsed metadata
+  # @pmx        - Object of parsed PMX metadata
+  # ```
   constructor: (arrayBuffer) ->
     @dataView = new DataView(arrayBuffer)
     @index    = 0
     @model    = {}
     @options  = {}
     @pmx      = {}
+
+  # Parse the model data and return a parsed data object.
+  parse: ->
+    @modelData()
+    @model
+
+  modelData: ->
+    @modelHeader()
+    @model.name           = @text()
+    @model.nameEnglish    = @text()
+    @model.comment        = @text()
+    @model.commentEnglish = @text()
+    @model.vertexes       = @vertexes()
+    @model.faces          = @faces()
+    @model.textures       = @textures()
+    @model.materials      = @materials()
+    @model.bones          = @bones()
+    @model.morphs         = @morphs()
+    @model.frames         = @frames()
+    @model.rigids         = @rigids()
+    @model.joints         = @joints()
 
   byte: () ->
     @uint8()
@@ -103,26 +141,6 @@ class this.Parser
       when 1 then @int8()
       when 2 then @int16()
       when 4 then @int32()
-
-  parse: ->
-    @modelData()
-    @model
-
-  modelData: ->
-    @modelHeader()
-    @model.name           = @text()
-    @model.nameEnglish    = @text()
-    @model.comment        = @text()
-    @model.commentEnglish = @text()
-    @model.vertexes       = @vertexes()
-    @model.faces          = @faces()
-    @model.textures       = @textures()
-    @model.materials      = @materials()
-    @model.bones          = @bones()
-    @model.morphs         = @morphs()
-    @model.frames         = @frames()
-    @model.rigids         = @rigids()
-    @model.joints         = @joints()
 
   modelHeader: ->
     @pmxName()
