@@ -10,10 +10,12 @@
 #
 # ### example
 # ```
-# parser = new Parser(arrayBuffer)
-# model  = parser.parse()
+# model = new MMD.Parser.parse(arrayBuffer)
 # ```
-class this.Parser
+class MMD.Parser
+  # An utility function to parse.
+  @parse: (args...) ->
+    new this(args...).parse()
 
   # The constructor.
   #

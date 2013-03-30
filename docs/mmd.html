@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>main.coffee</title>
+  <title>mmd.coffee</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -19,23 +19,23 @@
           <div id="jump_page">
             
               
-              <a class="source" href="controller.html">
-                controller.coffee
-              </a>
-            
-              
               <a class="source" href="index.html">
                 index.coffee
               </a>
             
               
-              <a class="source" href="loader.html">
-                loader.coffee
+              <a class="source" href="mmd.html">
+                mmd.coffee
               </a>
             
               
-              <a class="source" href="main.html">
-                main.coffee
+              <a class="source" href="controller.html">
+                controller.coffee
+              </a>
+            
+              
+              <a class="source" href="loader.html">
+                loader.coffee
               </a>
             
               
@@ -51,7 +51,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>main.coffee</h1>
+                  <h1>mmd.coffee</h1>
               </div>
           </li>
         
@@ -63,15 +63,16 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              
+              <p>Define a namespace named <code>MMD</code> and an utility function to render model data.</p>
+<pre><code>MMD.render(&#39;http://example.com/model.pmx&#39;)</code></pre>
+
             </div>
             
-            <div class="content"><div class='highlight'><pre>Loader.load <span class="string">'data/example.pmx'</span>, (arrayBuffer) -&gt;
-  parser     = <span class="keyword">new</span> Parser(arrayBuffer)
-  model      = parser.parse()
-  controller = <span class="keyword">new</span> Controller(model)
-  controller.render()
-  window.model = model</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="keyword">this</span>.MMD =
+  render: (url) -&gt;
+    <span class="property">@Loader</span>.load url, (arrayBuffer) =&gt;
+      model = <span class="property">@Parser</span>.parse(arrayBuffer)
+      <span class="keyword">new</span> <span class="property">@Controller</span>(model).render</pre></div></div>
             
         </li>
         

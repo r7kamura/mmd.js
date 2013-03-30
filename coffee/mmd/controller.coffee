@@ -1,12 +1,10 @@
-# Control model and three.js.
+# Control parsed model data and THREE.js.
 #
 # ```
-# parser     = new Parser(arrayBuffer)
-# model      = parser.parse()
-# controller = new Controller(model)
-# controller.render()
+# model = MMD.Parser.parse(arrayBuffer)
+# new MMD.Controller(model).render()
 # ```
-class this.Controller
+class MMD.Controller
 
   # Prepare objects to render 3D world.
   #

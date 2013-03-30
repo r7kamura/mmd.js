@@ -13,13 +13,14 @@ end
 
 desc "Compile coffeescripts to javascripts and documents"
 task :compile do
-  files = Dir.glob("coffee/**/*.coffee").join(" ")
+  files = Dir.glob("coffee/**/*.coffee").sort.join(" ")
   system("docco #{files}")
-  system("coffee -o js -c coffee")
+  system("coffee --join js/mmd.js --compile #{files}")
 end
 
 desc "Launch server and keep auto-compile in multi-thread"
 task :all do
+  Rake::Task[:compile].invoke
   Thread.new { Rake::Task[:server].invoke }
   system("bundle exec watchr watchr.rb")
 end

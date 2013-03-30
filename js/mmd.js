@@ -1,6 +1,139 @@
 (function() {
+  var __slice = Array.prototype.slice;
 
-  this.Parser = (function() {
+  this.MMD = {
+    render: function(url) {
+      var _this = this;
+      return this.Loader.load(url, function(arrayBuffer) {
+        var model;
+        model = _this.Parser.parse(arrayBuffer);
+        return new _this.Controller(model).render;
+      });
+    }
+  };
+
+  MMD.Controller = (function() {
+
+    function Controller(model) {
+      this.model = model;
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+      this.renderer = this.createRenderer();
+      this.scene = this.createScene();
+      this.camera = this.createCamera();
+      this.faces = this.createFaces();
+    }
+
+    Controller.prototype.render = function() {
+      var face, _i, _len, _ref;
+      document.body.appendChild(this.renderer.domElement);
+      this.scene.add(this.camera);
+      _ref = this.faces;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        face = _ref[_i];
+        this.scene.add(face);
+      }
+      return this.renderer.render(this.scene, this.camera);
+    };
+
+    Controller.prototype.animate = function() {
+      var _this = this;
+      window.requestAnimationFrame(function() {
+        return _this.animate();
+      });
+      return this.renderer.render(this.scene, this.camera);
+    };
+
+    Controller.prototype.createRenderer = function() {
+      var renderer;
+      renderer = new THREE.CanvasRenderer({
+        antialias: true
+      });
+      renderer.setSize(this.width, this.height);
+      return renderer;
+    };
+
+    Controller.prototype.createScene = function() {
+      return new THREE.Scene();
+    };
+
+    Controller.prototype.createCamera = function() {
+      var angleOfView, aspect, camera, clipFar, clipNear;
+      angleOfView = 75;
+      aspect = this.width / this.height;
+      clipNear = 1;
+      clipFar = 10000;
+      camera = new THREE.PerspectiveCamera(angleOfView, aspect, clipNear, clipFar);
+      camera.position.z = 1000;
+      return camera;
+    };
+
+    Controller.prototype.createFaces = function() {
+      var enlargementFactor, face, geometry, interval, mesh, _i, _len, _ref, _results, _step;
+      interval = 10;
+      enlargementFactor = 30;
+      _ref = this.model.faces;
+      _results = [];
+      for (_i = 0, _len = _ref.length, _step = interval; _i < _len; _i += _step) {
+        face = _ref[_i];
+        geometry = new THREE.Geometry();
+        geometry.vertices = [new THREE.Vector3(this.model.vertexes[face[0]].position.x * enlargementFactor, this.model.vertexes[face[0]].position.y * enlargementFactor, this.model.vertexes[face[0]].position.z * enlargementFactor), new THREE.Vector3(this.model.vertexes[face[1]].position.x * enlargementFactor, this.model.vertexes[face[1]].position.y * enlargementFactor, this.model.vertexes[face[1]].position.z * enlargementFactor), new THREE.Vector3(this.model.vertexes[face[2]].position.x * enlargementFactor, this.model.vertexes[face[2]].position.y * enlargementFactor, this.model.vertexes[face[2]].position.z * enlargementFactor)];
+        geometry.faces.push(new THREE.Face3(0, 1, 2));
+        geometry.computeFaceNormals();
+        mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
+        _results.push(mesh);
+      }
+      return _results;
+    };
+
+    return Controller;
+
+  })();
+
+  MMD.Loader = (function() {
+
+    Loader.load = function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return typeof result === "object" ? result : child;
+      })(this, args, function() {}).load();
+    };
+
+    function Loader(url, callback) {
+      this.url = url;
+      this.callback = callback;
+    }
+
+    Loader.prototype.load = function() {
+      var request,
+        _this = this;
+      request = new XMLHttpRequest();
+      request.open('GET', this.url);
+      request.responseType = 'arraybuffer';
+      request.send();
+      return request.onreadystatechange = function() {
+        if (request.readyState === 4) return _this.callback(request.response);
+      };
+    };
+
+    return Loader;
+
+  })();
+
+  MMD.Parser = (function() {
+
+    Parser.parse = function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return typeof result === "object" ? result : child;
+      })(this, args, function() {}).parse();
+    };
 
     function Parser(arrayBuffer) {
       this.dataView = new DataView(arrayBuffer);

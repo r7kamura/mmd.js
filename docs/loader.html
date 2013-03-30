@@ -19,23 +19,23 @@
           <div id="jump_page">
             
               
-              <a class="source" href="controller.html">
-                controller.coffee
-              </a>
-            
-              
               <a class="source" href="index.html">
                 index.coffee
               </a>
             
               
-              <a class="source" href="loader.html">
-                loader.coffee
+              <a class="source" href="mmd.html">
+                mmd.coffee
               </a>
             
               
-              <a class="source" href="main.html">
-                main.coffee
+              <a class="source" href="controller.html">
+                controller.coffee
+              </a>
+            
+              
+              <a class="source" href="loader.html">
+                loader.coffee
               </a>
             
               
@@ -64,10 +64,12 @@
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
               <p>Load arraybuffer via XHR and invoke callback.</p>
+<pre><code>MMD.Loader.load url, (arrayBuffer) -&gt;
+  console.log(arrayBuffer)</code></pre>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">this</span>.<span class="title">Loader</span></span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">MMD</span>.<span class="title">Loader</span></span></pre></div></div>
             
         </li>
         
@@ -78,16 +80,12 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Create a new instance of Loader, then call <code>load</code> of that.
-This is a method object pattern.</p>
-<pre><code>Loader.load url, (arrayBuffer) -&gt;
-  console.log(arrayBuffer)</code></pre>
+              <p>An utility function to load.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>  <span class="property">@load</span>: (args...) -&gt;
-    loader = <span class="keyword">new</span> <span class="keyword">this</span>(args...)
-    loader.load()</pre></div></div>
+    <span class="keyword">new</span> <span class="keyword">this</span>(args...).load()</pre></div></div>
             
         </li>
         

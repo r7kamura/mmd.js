@@ -1,16 +1,13 @@
 # Load arraybuffer via XHR and invoke callback.
-class this.Loader
-
-  # Create a new instance of Loader, then call `load` of that.
-  # This is a method object pattern.
-  #
-  # ```
-  # Loader.load url, (arrayBuffer) ->
-  #   console.log(arrayBuffer)
-  # ```
+#
+# ```
+# MMD.Loader.load url, (arrayBuffer) ->
+#   console.log(arrayBuffer)
+# ```
+class MMD.Loader
+  # An utility function to load.
   @load: (args...) ->
-    loader = new this(args...)
-    loader.load()
+    new this(args...).load()
 
   # The constructor.
   #

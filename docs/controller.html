@@ -19,23 +19,23 @@
           <div id="jump_page">
             
               
-              <a class="source" href="controller.html">
-                controller.coffee
-              </a>
-            
-              
               <a class="source" href="index.html">
                 index.coffee
               </a>
             
               
-              <a class="source" href="loader.html">
-                loader.coffee
+              <a class="source" href="mmd.html">
+                mmd.coffee
               </a>
             
               
-              <a class="source" href="main.html">
-                main.coffee
+              <a class="source" href="controller.html">
+                controller.coffee
+              </a>
+            
+              
+              <a class="source" href="loader.html">
+                loader.coffee
               </a>
             
               
@@ -63,15 +63,13 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <p>Control model and three.js.</p>
-<pre><code>parser     = new Parser(arrayBuffer)
-model      = parser.parse()
-controller = new Controller(model)
-controller.render()</code></pre>
+              <p>Control parsed model data and THREE.js.</p>
+<pre><code>model = MMD.Parser.parse(arrayBuffer)
+new MMD.Controller(model).render()</code></pre>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">this</span>.<span class="title">Controller</span></span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">MMD</span>.<span class="title">Controller</span></span></pre></div></div>
             
         </li>
         
