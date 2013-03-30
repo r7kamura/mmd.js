@@ -7,7 +7,7 @@
       return this.Loader.load(url, function(arrayBuffer) {
         var model;
         model = _this.Parser.parse(arrayBuffer);
-        return new _this.Controller(model).render;
+        return new _this.Controller(model).render();
       });
     }
   };
