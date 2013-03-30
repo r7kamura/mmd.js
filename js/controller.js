@@ -21,7 +21,7 @@
         vertex = _ref[_i];
         this.scene.add(vertex);
       }
-      return this.animate();
+      return this.renderer.render(this.scene, this.camera);
     };
 
     Controller.prototype.animate = function() {

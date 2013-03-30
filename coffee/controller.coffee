@@ -26,7 +26,7 @@ class this.Controller
     document.body.appendChild(@renderer.domElement)
     @scene.add(@camera)
     @scene.add(vertex) for vertex in @vertexes
-    @animate()
+    @renderer.render(@scene, @camera)
 
   # Update world by recursion.
   # This is a process invoked in each frame.
