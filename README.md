@@ -7,10 +7,10 @@ mmd.js is a project to work MMD in a web browser with client-side JavaScript.
 ## Demo
 http://r7kamura.github.com/mmd.js/
 
-## Documents
-http://r7kamura.github.com/mmd.js/docs/
-
 ## Development
+
+### Documents
+http://r7kamura.github.com/mmd.js/docs/
 
 ### Install
 ```
