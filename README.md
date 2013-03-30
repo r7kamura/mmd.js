@@ -10,6 +10,8 @@ MMD.js is a project to work MMD in a web browser with client-side JavaScript.
 ```
 $ gem install bundler
 $ bundle install
+$ npm install -g coffee-script
+$ npm install -g docco
 ```
 
 ### Launch
@@ -19,7 +21,7 @@ $ bundle exec rake start
 
 ### Compile
 ```
-$ coffee -o js -wc coffee
+$ bundle exec watchr watchr.rb
 ```
 
 ### Files
@@ -27,6 +29,6 @@ $ coffee -o js -wc coffee
 mmd.js
 |-- coffee : main program code written in coffeescript
 |-- data   : example model data for development use
-|-- doc    : documents
+|-- docs   : documents
 `-- js     : compiled javascript files
 ```
