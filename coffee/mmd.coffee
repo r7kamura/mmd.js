@@ -7,4 +7,4 @@ this.MMD =
   render: (url) ->
     @Loader.load url, (arrayBuffer) =>
       model = @Parser.parse(arrayBuffer)
-      new @Controller(model).render()
+      new @Renderer(model).render()

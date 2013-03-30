@@ -2,9 +2,9 @@
 #
 # ```
 # model = MMD.Parser.parse(arrayBuffer)
-# new MMD.Controller(model).render()
+# new MMD.Renderer(model).render()
 # ```
-class MMD.Controller
+class MMD.Renderer
 
   # Prepare objects to render 3D world.
   #
