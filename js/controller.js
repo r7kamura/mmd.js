@@ -57,19 +57,21 @@
     };
 
     Controller.prototype.createVertexes = function() {
-      var geometry, interval, material, mesh, vertex, _i, _len, _ref, _results, _step;
+      var enlargementFactor, geometry, interval, material, mesh, meshColor, vertex, _i, _len, _ref, _results, _step;
       interval = 100;
+      enlargementFactor = 30;
+      meshColor = 0xff0000;
       _ref = this.model.vertexes;
       _results = [];
       for (_i = 0, _len = _ref.length, _step = interval; _i < _len; _i += _step) {
         vertex = _ref[_i];
         geometry = new THREE.SphereGeometry(1);
         material = new THREE.MeshBasicMaterial({
-          color: 0xff0000,
+          color: meshColor,
           wireframe: true
         });
         mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(vertex.position[0] * 30, vertex.position[1] * 30, vertex.position[2] * 30);
+        mesh.position.set(vertex.position[0] * enlargementFactor, vertex.position[1] * enlargementFactor, vertex.position[2] * enlargementFactor);
         _results.push(mesh);
       }
       return _results;

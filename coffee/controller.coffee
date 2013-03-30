@@ -51,14 +51,16 @@ class this.Controller
   # Due to the performance reason, we don't render all of vertexes.
   # This is adjusted by the value `interval`.
   createVertexes: ->
-    interval = 100
+    interval          = 100
+    enlargementFactor = 30
+    meshColor         = 0xff0000
     for vertex in @model.vertexes by interval
       geometry = new THREE.SphereGeometry(1)
-      material = new THREE.MeshBasicMaterial(color: 0xff0000, wireframe: true)
+      material = new THREE.MeshBasicMaterial(color: meshColor, wireframe: true)
       mesh     = new THREE.Mesh(geometry, material)
       mesh.position.set(
-        vertex.position[0] * 30,
-        vertex.position[1] * 30,
-        vertex.position[2] * 30
+        vertex.position[0] * enlargementFactor,
+        vertex.position[1] * enlargementFactor,
+        vertex.position[2] * enlargementFactor
       )
       mesh

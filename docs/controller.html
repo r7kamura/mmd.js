@@ -200,15 +200,17 @@ This is adjusted by the value <code>interval</code>.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  createVertexes: -&gt;
-    interval = <span class="number">100</span>
+    interval          = <span class="number">100</span>
+    enlargementFactor = <span class="number">30</span>
+    meshColor         = <span class="number">0xff0000</span>
     <span class="keyword">for</span> vertex <span class="keyword">in</span> <span class="property">@model</span>.vertexes <span class="keyword">by</span> interval
       geometry = <span class="keyword">new</span> THREE.SphereGeometry(<span class="number">1</span>)
-      material = <span class="keyword">new</span> THREE.MeshBasicMaterial(color: <span class="number">0xff0000</span>, wireframe: <span class="literal">true</span>)
+      material = <span class="keyword">new</span> THREE.MeshBasicMaterial(color: meshColor, wireframe: <span class="literal">true</span>)
       mesh     = <span class="keyword">new</span> THREE.Mesh(geometry, material)
       mesh.position.set(
-        vertex.position[<span class="number">0</span>] * <span class="number">30</span>,
-        vertex.position[<span class="number">1</span>] * <span class="number">30</span>,
-        vertex.position[<span class="number">2</span>] * <span class="number">30</span>
+        vertex.position[<span class="number">0</span>] * enlargementFactor,
+        vertex.position[<span class="number">1</span>] * enlargementFactor,
+        vertex.position[<span class="number">2</span>] * enlargementFactor
       )
       mesh</pre></div></div>
             
