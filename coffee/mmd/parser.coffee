@@ -34,7 +34,7 @@ class MMD.Parser
     @options  = {}
     @pmx      = {}
 
-  # Parse the model data and return a parsed data object.
+  # Parse model data and return a parsed data object.
   # This function also represents the contents of PMX data.
   parse: ->
     @pmx.name                  = @string(4)
