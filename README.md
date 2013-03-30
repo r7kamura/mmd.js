@@ -4,6 +4,12 @@
 ( [Hatsune Miku](http://piapro.net/en_for_creators.html#prettyPhoto) / Crypton Future Media inc. / [CC BY-NC](http://creativecommons.org/licenses/by-nc/3.0/) )  
 MMD.js is a project to work MMD in a web browser with client-side JavaScript.
 
+## Demo
+http://r7kamura.github.com/mmd.js/
+
+## Documents
+http://r7kamura.github.com/mmd.js/docs/
+
 ## Development
 
 ### Install
