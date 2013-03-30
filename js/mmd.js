@@ -77,7 +77,7 @@
       for (_i = 0, _len = _ref.length, _step = interval; _i < _len; _i += _step) {
         face = _ref[_i];
         geometry = new THREE.Geometry();
-        geometry.vertices = [new THREE.Vector3(this.model.vertexes[face[0]].position.x * enlargementFactor, this.model.vertexes[face[0]].position.y * enlargementFactor, this.model.vertexes[face[0]].position.z * enlargementFactor), new THREE.Vector3(this.model.vertexes[face[1]].position.x * enlargementFactor, this.model.vertexes[face[1]].position.y * enlargementFactor, this.model.vertexes[face[1]].position.z * enlargementFactor), new THREE.Vector3(this.model.vertexes[face[2]].position.x * enlargementFactor, this.model.vertexes[face[2]].position.y * enlargementFactor, this.model.vertexes[face[2]].position.z * enlargementFactor)];
+        geometry.vertices = [new THREE.Vector3(this.model.vertices[face[0]].position.x * enlargementFactor, this.model.vertices[face[0]].position.y * enlargementFactor, this.model.vertices[face[0]].position.z * enlargementFactor), new THREE.Vector3(this.model.vertices[face[1]].position.x * enlargementFactor, this.model.vertices[face[1]].position.y * enlargementFactor, this.model.vertices[face[1]].position.z * enlargementFactor), new THREE.Vector3(this.model.vertices[face[2]].position.x * enlargementFactor, this.model.vertices[face[2]].position.y * enlargementFactor, this.model.vertices[face[2]].position.z * enlargementFactor)];
         geometry.faces.push(new THREE.Face3(0, 1, 2));
         geometry.computeFaceNormals();
         mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
@@ -159,7 +159,7 @@
       this.model.nameEnglish = this.text();
       this.model.comment = this.text();
       this.model.commentEnglish = this.text();
-      this.model.vertexes = this.arrayOf('vertex');
+      this.model.vertices = this.arrayOf('vertex');
       this.model.faces = this.arrayOf('face', 3);
       this.model.textures = this.arrayOf('texture');
       this.model.materials = this.arrayOf('material');

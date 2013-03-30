@@ -53,7 +53,7 @@ class MMD.Controller
     camera
 
   # Create faces of MMD model.
-  # Due to the performance reason, we don't render all of vertexes.
+  # Due to the performance reason, we don't render all of faces.
   # This is adjusted by the value `interval`.
   createFaces: ->
     interval          = 10
@@ -62,19 +62,19 @@ class MMD.Controller
       geometry = new THREE.Geometry()
       geometry.vertices = [
         new THREE.Vector3(
-          @model.vertexes[face[0]].position.x * enlargementFactor,
-          @model.vertexes[face[0]].position.y * enlargementFactor,
-          @model.vertexes[face[0]].position.z * enlargementFactor
+          @model.vertices[face[0]].position.x * enlargementFactor,
+          @model.vertices[face[0]].position.y * enlargementFactor,
+          @model.vertices[face[0]].position.z * enlargementFactor
         ),
         new THREE.Vector3(
-          @model.vertexes[face[1]].position.x * enlargementFactor,
-          @model.vertexes[face[1]].position.y * enlargementFactor,
-          @model.vertexes[face[1]].position.z * enlargementFactor
+          @model.vertices[face[1]].position.x * enlargementFactor,
+          @model.vertices[face[1]].position.y * enlargementFactor,
+          @model.vertices[face[1]].position.z * enlargementFactor
         ),
         new THREE.Vector3(
-          @model.vertexes[face[2]].position.x * enlargementFactor,
-          @model.vertexes[face[2]].position.y * enlargementFactor,
-          @model.vertexes[face[2]].position.z * enlargementFactor
+          @model.vertices[face[2]].position.x * enlargementFactor,
+          @model.vertices[face[2]].position.y * enlargementFactor,
+          @model.vertices[face[2]].position.z * enlargementFactor
         ),
       ]
       geometry.faces.push(new THREE.Face3(0, 1, 2))

@@ -52,7 +52,7 @@ class MMD.Parser
     @model.nameEnglish         = @text()
     @model.comment             = @text()
     @model.commentEnglish      = @text()
-    @model.vertexes            = @arrayOf('vertex')
+    @model.vertices            = @arrayOf('vertex')
     @model.faces               = @arrayOf('face', 3)
     @model.textures            = @arrayOf('texture')
     @model.materials           = @arrayOf('material')

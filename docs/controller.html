@@ -196,7 +196,7 @@ This is a process invoked in each frame.</p>
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Create faces of MMD model.
-Due to the performance reason, we don&#39;t render all of vertexes.
+Due to the performance reason, we don&#39;t render all of faces.
 This is adjusted by the value <code>interval</code>.</p>
 
             </div>
@@ -208,19 +208,19 @@ This is adjusted by the value <code>interval</code>.</p>
       geometry = <span class="keyword">new</span> THREE.Geometry()
       geometry.vertices = [
         <span class="keyword">new</span> THREE.Vector3(
-          <span class="property">@model</span>.vertexes[face[<span class="number">0</span>]].position.x * enlargementFactor,
-          <span class="property">@model</span>.vertexes[face[<span class="number">0</span>]].position.y * enlargementFactor,
-          <span class="property">@model</span>.vertexes[face[<span class="number">0</span>]].position.z * enlargementFactor
+          <span class="property">@model</span>.vertices[face[<span class="number">0</span>]].position.x * enlargementFactor,
+          <span class="property">@model</span>.vertices[face[<span class="number">0</span>]].position.y * enlargementFactor,
+          <span class="property">@model</span>.vertices[face[<span class="number">0</span>]].position.z * enlargementFactor
         ),
         <span class="keyword">new</span> THREE.Vector3(
-          <span class="property">@model</span>.vertexes[face[<span class="number">1</span>]].position.x * enlargementFactor,
-          <span class="property">@model</span>.vertexes[face[<span class="number">1</span>]].position.y * enlargementFactor,
-          <span class="property">@model</span>.vertexes[face[<span class="number">1</span>]].position.z * enlargementFactor
+          <span class="property">@model</span>.vertices[face[<span class="number">1</span>]].position.x * enlargementFactor,
+          <span class="property">@model</span>.vertices[face[<span class="number">1</span>]].position.y * enlargementFactor,
+          <span class="property">@model</span>.vertices[face[<span class="number">1</span>]].position.z * enlargementFactor
         ),
         <span class="keyword">new</span> THREE.Vector3(
-          <span class="property">@model</span>.vertexes[face[<span class="number">2</span>]].position.x * enlargementFactor,
-          <span class="property">@model</span>.vertexes[face[<span class="number">2</span>]].position.y * enlargementFactor,
-          <span class="property">@model</span>.vertexes[face[<span class="number">2</span>]].position.z * enlargementFactor
+          <span class="property">@model</span>.vertices[face[<span class="number">2</span>]].position.x * enlargementFactor,
+          <span class="property">@model</span>.vertices[face[<span class="number">2</span>]].position.y * enlargementFactor,
+          <span class="property">@model</span>.vertices[face[<span class="number">2</span>]].position.z * enlargementFactor
         ),
       ]
       geometry.faces.push(<span class="keyword">new</span> THREE.Face3(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>))
