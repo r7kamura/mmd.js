@@ -34,7 +34,7 @@
 
     Controller.prototype.createRenderer = function() {
       var renderer;
-      renderer = new THREE.WebGLRenderer({
+      renderer = new THREE.CanvasRenderer({
         antialias: true
       });
       renderer.setSize(this.width, this.height);

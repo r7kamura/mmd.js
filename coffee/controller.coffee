@@ -36,7 +36,7 @@ class this.Controller
 
   # Create a renderer object required to render world.
   createRenderer: ->
-    renderer = new THREE.WebGLRenderer(antialias: true)
+    renderer = new THREE.CanvasRenderer(antialias: true)
     renderer.setSize(@width, @height)
     renderer
 
