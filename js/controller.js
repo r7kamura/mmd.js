@@ -10,11 +10,17 @@
       this.scene = this.createScene();
       this.camera = this.createCamera();
       this.vertexes = this.createVertexes();
-      this.scene.add(this.camera);
     }
 
     Controller.prototype.render = function() {
+      var vertex, _i, _len, _ref;
       document.body.appendChild(this.renderer.domElement);
+      this.scene.add(this.camera);
+      _ref = this.vertexes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        vertex = _ref[_i];
+        this.scene.add(vertex);
+      }
       return this.animate();
     };
 
@@ -40,17 +46,22 @@
     };
 
     Controller.prototype.createCamera = function() {
-      var camera;
-      camera = new THREE.PerspectiveCamera(75, this.width / this.height, 1, 10000);
+      var angleOfView, aspect, camera, clipFar, clipNear;
+      angleOfView = 75;
+      aspect = this.width / this.height;
+      clipNear = 1;
+      clipFar = 10000;
+      camera = new THREE.PerspectiveCamera(angleOfView, aspect, clipNear, clipFar);
       camera.position.z = 1000;
       return camera;
     };
 
     Controller.prototype.createVertexes = function() {
-      var geometry, material, mesh, vertex, _i, _len, _ref, _results, _step;
+      var geometry, interval, material, mesh, vertex, _i, _len, _ref, _results, _step;
+      interval = 100;
       _ref = this.model.vertexes;
       _results = [];
-      for (_i = 0, _len = _ref.length, _step = 10; _i < _len; _i += _step) {
+      for (_i = 0, _len = _ref.length, _step = interval; _i < _len; _i += _step) {
         vertex = _ref[_i];
         geometry = new THREE.SphereGeometry(1);
         material = new THREE.MeshBasicMaterial({
@@ -59,7 +70,7 @@
         });
         mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(vertex.position[0] * 30, vertex.position[1] * 30, vertex.position[2] * 30);
-        _results.push(this.scene.add(mesh));
+        _results.push(mesh);
       }
       return _results;
     };

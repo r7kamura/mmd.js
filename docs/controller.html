@@ -58,42 +58,145 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              
+              <p>Control model and three.</p>
+
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">this</span>.<span class="title">Controller</span></span>
-  constructor: (<span class="property">@model</span>) -&gt;
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">this</span>.<span class="title">Controller</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Prepare objects to render 3D world.</p>
+<pre><code>@model - an Object parsed by Parser.</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  constructor: (<span class="property">@model</span>) -&gt;
     <span class="property">@width</span>    = window.innerWidth
     <span class="property">@height</span>   = window.innerHeight
     <span class="property">@renderer</span> = <span class="property">@createRenderer</span>()
     <span class="property">@scene</span>    = <span class="property">@createScene</span>()
     <span class="property">@camera</span>   = <span class="property">@createCamera</span>()
-    <span class="property">@vertexes</span> = <span class="property">@createVertexes</span>()
-    <span class="property">@scene</span>.add(<span class="property">@camera</span>)
+    <span class="property">@vertexes</span> = <span class="property">@createVertexes</span>()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Put canvas object, and start rendering loop.</p>
 
-  render: -&gt;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  render: -&gt;
     document.body.appendChild(<span class="property">@renderer</span>.domElement)
-    <span class="property">@animate</span>()
+    <span class="property">@scene</span>.add(<span class="property">@camera</span>)
+    <span class="property">@scene</span>.add(vertex) <span class="keyword">for</span> vertex <span class="keyword">in</span> <span class="property">@vertexes</span>
+    <span class="property">@animate</span>()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Update world.
+This is a process invoked in each frame.</p>
 
-  animate: -&gt;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  animate: -&gt;
     window.requestAnimationFrame =&gt; <span class="property">@animate</span>()
-    <span class="property">@renderer</span>.render(<span class="property">@scene</span>, <span class="property">@camera</span>)
+    <span class="property">@renderer</span>.render(<span class="property">@scene</span>, <span class="property">@camera</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Create a renderer required to render world.</p>
 
-  createRenderer: -&gt;
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  createRenderer: -&gt;
     renderer = <span class="keyword">new</span> THREE.WebGLRenderer(antialias: <span class="literal">true</span>)
     renderer.setSize(<span class="property">@width</span>, <span class="property">@height</span>)
-    renderer
+    renderer</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Create a scene object required to render world.</p>
 
-  createScene: -&gt;
-    <span class="keyword">new</span> THREE.Scene()
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  createScene: -&gt;
+    <span class="keyword">new</span> THREE.Scene()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Create a camera object.</p>
 
-  createCamera: -&gt;
-    camera = <span class="keyword">new</span> THREE.PerspectiveCamera(<span class="number">75</span>, <span class="property">@width</span> / <span class="property">@height</span>, <span class="number">1</span>, <span class="number">10000</span>)
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  createCamera: -&gt;
+    angleOfView       = <span class="number">75</span>
+    aspect            = <span class="property">@width</span> / <span class="property">@height</span>
+    clipNear          = <span class="number">1</span>
+    clipFar           = <span class="number">10000</span>
+    camera            = <span class="keyword">new</span> THREE.PerspectiveCamera(angleOfView, aspect, clipNear, clipFar)
     camera.position.z = <span class="number">1000</span>
-    camera
+    camera</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Create meshes representing the vertexes of MMD model.
+Due to the performance reason, we don&#39;t render all of vertexes.
+This is adjusted by the value <code>interval</code>.</p>
 
-  createVertexes: -&gt;
-    <span class="keyword">for</span> vertex <span class="keyword">in</span> <span class="property">@model</span>.vertexes <span class="keyword">by</span> <span class="number">10</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  createVertexes: -&gt;
+    interval = <span class="number">100</span>
+    <span class="keyword">for</span> vertex <span class="keyword">in</span> <span class="property">@model</span>.vertexes <span class="keyword">by</span> interval
       geometry = <span class="keyword">new</span> THREE.SphereGeometry(<span class="number">1</span>)
       material = <span class="keyword">new</span> THREE.MeshBasicMaterial(color: <span class="number">0xff0000</span>, wireframe: <span class="literal">true</span>)
       mesh     = <span class="keyword">new</span> THREE.Mesh(geometry, material)
@@ -102,7 +205,7 @@
         vertex.position[<span class="number">1</span>] * <span class="number">30</span>,
         vertex.position[<span class="number">2</span>] * <span class="number">30</span>
       )
-      <span class="property">@scene</span>.add(mesh)</pre></div></div>
+      mesh</pre></div></div>
             
         </li>
         

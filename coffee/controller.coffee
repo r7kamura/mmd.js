@@ -1,4 +1,11 @@
+# Control model and three.
 class this.Controller
+
+  # Prepare objects to render 3D world.
+  #
+  # ```
+  # @model - an Object parsed by Parser.
+  # ```
   constructor: (@model) ->
     @width    = window.innerWidth
     @height   = window.innerHeight
@@ -6,31 +13,46 @@ class this.Controller
     @scene    = @createScene()
     @camera   = @createCamera()
     @vertexes = @createVertexes()
-    @scene.add(@camera)
 
+  # Put canvas object, and start rendering loop.
   render: ->
     document.body.appendChild(@renderer.domElement)
+    @scene.add(@camera)
+    @scene.add(vertex) for vertex in @vertexes
     @animate()
 
+  # Update world.
+  # This is a process invoked in each frame.
   animate: ->
     window.requestAnimationFrame => @animate()
     @renderer.render(@scene, @camera)
 
+  # Create a renderer required to render world.
   createRenderer: ->
     renderer = new THREE.WebGLRenderer(antialias: true)
     renderer.setSize(@width, @height)
     renderer
 
+  # Create a scene object required to render world.
   createScene: ->
     new THREE.Scene()
 
+  # Create a camera object.
   createCamera: ->
-    camera = new THREE.PerspectiveCamera(75, @width / @height, 1, 10000)
+    angleOfView       = 75
+    aspect            = @width / @height
+    clipNear          = 1
+    clipFar           = 10000
+    camera            = new THREE.PerspectiveCamera(angleOfView, aspect, clipNear, clipFar)
     camera.position.z = 1000
     camera
 
+  # Create meshes representing the vertexes of MMD model.
+  # Due to the performance reason, we don't render all of vertexes.
+  # This is adjusted by the value `interval`.
   createVertexes: ->
-    for vertex in @model.vertexes by 10
+    interval = 100
+    for vertex in @model.vertexes by interval
       geometry = new THREE.SphereGeometry(1)
       material = new THREE.MeshBasicMaterial(color: 0xff0000, wireframe: true)
       mesh     = new THREE.Mesh(geometry, material)
@@ -39,4 +61,4 @@ class this.Controller
         vertex.position[1] * 30,
         vertex.position[2] * 30
       )
-      @scene.add(mesh)
+      mesh
