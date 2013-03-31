@@ -49,3 +49,7 @@ mmd.js
 |-- index.html   : example html file to render model data
 `-- watchr.rb    : a file invoked from watchr command for automation
 ```
+
+## Dependencies
+* https://github.com/mrdoob/three.js
+* https://github.com/r7kamura/sjis.js

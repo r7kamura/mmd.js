@@ -106,7 +106,7 @@ class MMD.ModelParser
     @chars(size).join('')
 
   # Return an Array of uint8 with a given size.
-  bytes: (size) ->
+  bytes: () ->
     @uint8() for [0...@int32()]
 
   # Read a text block.

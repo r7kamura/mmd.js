@@ -8,3 +8,8 @@ this.MMD =
     @Loader.load url, (arrayBuffer) =>
       model = @ModelParser.parse(arrayBuffer)
       new @Renderer(model).render()
+
+  loadMotion: (url) ->
+    @Loader.load url, (arrayBuffer) =>
+      motion = @MotionParser.parse(arrayBuffer)
+      console.log(motion)
