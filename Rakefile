@@ -1,9 +1,9 @@
 require "webrick"
 require "launchy"
 
-desc "Launch server on localhost (Port is ENV['PORT'] or 8080)"
+desc "Launch server on localhost (Port is ENV['PORT'] or 3000)"
 task :server do
-  port = ENV["PORT"] || 8080
+  port = ENV["PORT"] || 3000
   WEBrick::HTTPServer.new(
     :DocumentRoot  => './',
     :Port          => port,
