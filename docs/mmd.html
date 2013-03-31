@@ -72,6 +72,7 @@
   render: (url) -&gt;
     <span class="property">@Loader</span>.load url, (arrayBuffer) =&gt;
       model = <span class="property">@Parser</span>.parse(arrayBuffer)
+      window.model = model
       <span class="keyword">new</span> <span class="property">@Renderer</span>(model).render()</pre></div></div>
             
         </li>

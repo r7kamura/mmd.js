@@ -91,7 +91,8 @@ new MMD.Renderer(model).render()</code></pre>
     <span class="property">@renderer</span> = <span class="property">@createRenderer</span>()
     <span class="property">@scene</span>    = <span class="property">@createScene</span>()
     <span class="property">@camera</span>   = <span class="property">@createCamera</span>()
-    <span class="property">@faces</span>    = <span class="property">@createFaces</span>()</pre></div></div>
+    <span class="property">@faces</span>    = <span class="property">@createFaces</span>()
+    <span class="property">@bones</span>    = <span class="property">@createBones</span>()</pre></div></div>
             
         </li>
         
@@ -102,12 +103,14 @@ new MMD.Renderer(model).render()</code></pre>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Put canvas object, and start rendering loop.</p>
+              <p>@rigids   = @createRigids()</p>
+<p>Put canvas object, and start rendering loop.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>  render: -&gt;
     document.body.appendChild(<span class="property">@renderer</span>.domElement)
+    <span class="property">@addPlane</span>()
     <span class="property">@scene</span>.add(<span class="property">@camera</span>)
     <span class="property">@scene</span>.add(face) <span class="keyword">for</span> face <span class="keyword">in</span> <span class="property">@faces</span>
     <span class="property">@renderer</span>.render(<span class="property">@scene</span>, <span class="property">@camera</span>)</pre></div></div>
@@ -183,7 +186,9 @@ This is a process invoked in each frame.</p>
     clipNear          = <span class="number">1</span>
     clipFar           = <span class="number">10000</span>
     camera            = <span class="keyword">new</span> THREE.PerspectiveCamera(angleOfView, aspect, clipNear, clipFar)
-    camera.position.z = <span class="number">1000</span>
+    camera.position.y = <span class="number">20</span>
+    camera.position.z = -<span class="number">30</span>
+    camera.lookAt(x: <span class="number">0</span>, y: <span class="number">0</span>, z: <span class="number">0</span>)
     camera</pre></div></div>
             
         </li>
@@ -202,31 +207,86 @@ This is adjusted by the value <code>interval</code>.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  createFaces: -&gt;
-    interval          = <span class="number">10</span>
-    enlargementFactor = <span class="number">30</span>
+    interval = <span class="number">10</span>
     <span class="keyword">for</span> face <span class="keyword">in</span> <span class="property">@model</span>.faces <span class="keyword">by</span> interval
       geometry = <span class="keyword">new</span> THREE.Geometry()
       geometry.vertices = [
         <span class="keyword">new</span> THREE.Vector3(
-          <span class="property">@model</span>.vertices[face[<span class="number">0</span>]].position.x * enlargementFactor,
-          <span class="property">@model</span>.vertices[face[<span class="number">0</span>]].position.y * enlargementFactor,
-          <span class="property">@model</span>.vertices[face[<span class="number">0</span>]].position.z * enlargementFactor
+          <span class="property">@model</span>.vertices[face[<span class="number">0</span>]].position.x,
+          <span class="property">@model</span>.vertices[face[<span class="number">0</span>]].position.y,
+          <span class="property">@model</span>.vertices[face[<span class="number">0</span>]].position.z
         ),
         <span class="keyword">new</span> THREE.Vector3(
-          <span class="property">@model</span>.vertices[face[<span class="number">1</span>]].position.x * enlargementFactor,
-          <span class="property">@model</span>.vertices[face[<span class="number">1</span>]].position.y * enlargementFactor,
-          <span class="property">@model</span>.vertices[face[<span class="number">1</span>]].position.z * enlargementFactor
+          <span class="property">@model</span>.vertices[face[<span class="number">1</span>]].position.x,
+          <span class="property">@model</span>.vertices[face[<span class="number">1</span>]].position.y,
+          <span class="property">@model</span>.vertices[face[<span class="number">1</span>]].position.z
         ),
         <span class="keyword">new</span> THREE.Vector3(
-          <span class="property">@model</span>.vertices[face[<span class="number">2</span>]].position.x * enlargementFactor,
-          <span class="property">@model</span>.vertices[face[<span class="number">2</span>]].position.y * enlargementFactor,
-          <span class="property">@model</span>.vertices[face[<span class="number">2</span>]].position.z * enlargementFactor
+          <span class="property">@model</span>.vertices[face[<span class="number">2</span>]].position.x,
+          <span class="property">@model</span>.vertices[face[<span class="number">2</span>]].position.y,
+          <span class="property">@model</span>.vertices[face[<span class="number">2</span>]].position.z
         ),
       ]
       geometry.faces.push(<span class="keyword">new</span> THREE.Face3(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>))
       geometry.computeFaceNormals()
       mesh = <span class="keyword">new</span> THREE.Mesh(geometry, <span class="keyword">new</span> THREE.MeshNormalMaterial())
-      mesh</pre></div></div>
+      mesh
+
+  createRigids: -&gt;
+    interval          = <span class="number">1</span>
+    <span class="keyword">for</span> rigid <span class="keyword">in</span> <span class="property">@model</span>.rigids <span class="keyword">by</span> interval
+      mesh = <span class="keyword">new</span> THREE.Mesh(
+        <span class="keyword">new</span> THREE.SphereGeometry(<span class="number">0.5</span>),
+        <span class="keyword">new</span> THREE.MeshNormalMaterial()
+      )
+      mesh.position.x = rigid.position.x
+      mesh.position.y = rigid.position.y
+      mesh.position.z = rigid.position.z
+      <span class="property">@scene</span>.add(mesh)
+
+  createBones: -&gt;
+    interval = <span class="number">1</span>
+    <span class="keyword">for</span> bone <span class="keyword">in</span> <span class="property">@model</span>.bones <span class="keyword">by</span> interval
+      geometry        = <span class="keyword">new</span> THREE.SphereGeometry(<span class="number">0.1</span>)
+      material        = <span class="keyword">new</span> THREE.MeshNormalMaterial(wireFrame: <span class="literal">true</span>)
+      mesh            = <span class="keyword">new</span> THREE.Mesh(geometry, material)
+      mesh.position.x = bone.position.x
+      mesh.position.y = bone.position.y
+      mesh.position.z = bone.position.z
+      <span class="property">@scene</span>.add(mesh)
+
+      <span class="keyword">if</span> bone.destination != -<span class="number">1</span>
+        material = <span class="keyword">new</span> THREE.LineBasicMaterial(color: <span class="number">0xff0000</span>)
+        geometry = <span class="keyword">new</span> THREE.Geometry()
+        geometry.vertices.push(
+          <span class="keyword">new</span> THREE.Vector3(
+            bone.position.x,
+            bone.position.y,
+            bone.position.z
+          )
+        )
+        destination = <span class="keyword">switch</span> bone.flags.specifiedByIndex
+          <span class="keyword">when</span> <span class="literal">true</span> <span class="keyword">then</span> <span class="property">@model</span>.bones[bone.destination]
+          <span class="keyword">when</span> <span class="literal">false</span> <span class="keyword">then</span> bone.destination
+        geometry.vertices.push(
+          <span class="keyword">new</span> THREE.Vector3(
+            destination.x,
+            destination.y,
+            destination.z
+          )
+        )
+        mesh            = <span class="keyword">new</span> THREE.Line(geometry, material)
+        mesh.position.x = bone.position.x
+        mesh.position.y = bone.position.y
+        mesh.position.z = bone.position.z
+        <span class="property">@scene</span>.add(mesh)
+
+  addPlane: -&gt;
+    geometry = <span class="keyword">new</span> THREE.PlaneGeometry(<span class="number">100</span>, <span class="number">100</span>, <span class="number">10</span>, <span class="number">10</span>)
+    material = <span class="keyword">new</span> THREE.MeshBasicMaterial(wireFrame: <span class="literal">true</span>, color: <span class="number">0xff0000</span>)
+    mesh     = <span class="keyword">new</span> THREE.Mesh(geometry, material)
+    console.log(mesh)
+    <span class="property">@scene</span>.add(mesh)</pre></div></div>
             
         </li>
         

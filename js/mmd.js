@@ -631,26 +631,11 @@
       this.renderer = this.createRenderer();
       this.scene = this.createScene();
       this.camera = this.createCamera();
-      this.faces = this.createFaces();
+      this.addFaces();
     }
 
     Renderer.prototype.render = function() {
-      var face, _i, _len, _ref;
       document.body.appendChild(this.renderer.domElement);
-      this.scene.add(this.camera);
-      _ref = this.faces;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        face = _ref[_i];
-        this.scene.add(face);
-      }
-      return this.renderer.render(this.scene, this.camera);
-    };
-
-    Renderer.prototype.animate = function() {
-      var _this = this;
-      window.requestAnimationFrame(function() {
-        return _this.animate();
-      });
       return this.renderer.render(this.scene, this.camera);
     };
 
@@ -674,24 +659,58 @@
       clipNear = 1;
       clipFar = 10000;
       camera = new THREE.PerspectiveCamera(angleOfView, aspect, clipNear, clipFar);
-      camera.position.z = 1000;
+      camera.position.y = 20;
+      camera.position.z = -20;
+      camera.lookAt({
+        x: 0,
+        y: 10,
+        z: 0
+      });
       return camera;
     };
 
-    Renderer.prototype.createFaces = function() {
-      var enlargementFactor, face, geometry, interval, mesh, _i, _len, _ref, _results, _step;
+    Renderer.prototype.addFaces = function() {
+      var face, geometry, interval, mesh, _i, _len, _ref, _results, _step;
       interval = 10;
-      enlargementFactor = 30;
       _ref = this.model.faces;
       _results = [];
       for (_i = 0, _len = _ref.length, _step = interval; _i < _len; _i += _step) {
         face = _ref[_i];
         geometry = new THREE.Geometry();
-        geometry.vertices = [new THREE.Vector3(this.model.vertices[face[0]].position.x * enlargementFactor, this.model.vertices[face[0]].position.y * enlargementFactor, this.model.vertices[face[0]].position.z * enlargementFactor), new THREE.Vector3(this.model.vertices[face[1]].position.x * enlargementFactor, this.model.vertices[face[1]].position.y * enlargementFactor, this.model.vertices[face[1]].position.z * enlargementFactor), new THREE.Vector3(this.model.vertices[face[2]].position.x * enlargementFactor, this.model.vertices[face[2]].position.y * enlargementFactor, this.model.vertices[face[2]].position.z * enlargementFactor)];
+        geometry.vertices = [this.model.vertices[face[0]].position, this.model.vertices[face[1]].position, this.model.vertices[face[2]].position];
         geometry.faces.push(new THREE.Face3(0, 1, 2));
         geometry.computeFaceNormals();
         mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
-        _results.push(mesh);
+        _results.push(this.scene.add(mesh));
+      }
+      return _results;
+    };
+
+    Renderer.prototype.addBones = function() {
+      var bone, geometry, material, mesh, _i, _len, _ref, _results;
+      _ref = this.model.bones;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        bone = _ref[_i];
+        geometry = new THREE.SphereGeometry(0.1);
+        material = new THREE.MeshNormalMaterial();
+        mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = bone.position.x;
+        mesh.position.y = bone.position.y;
+        mesh.position.z = bone.position.z;
+        this.scene.add(mesh);
+        if (bone.destination !== -1 && bone.flags.specifiedByIndex) {
+          material = new THREE.LineBasicMaterial({
+            color: 0xff0000
+          });
+          geometry = new THREE.Geometry();
+          geometry.vertices.push(bone.position);
+          geometry.vertices.push(this.model.bones[bone.destination].position);
+          mesh = new THREE.Line(geometry, material);
+          _results.push(this.scene.add(mesh));
+        } else {
+          _results.push(void 0);
+        }
       }
       return _results;
     };
