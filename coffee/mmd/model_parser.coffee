@@ -10,9 +10,9 @@
 #
 # ### example
 # ```
-# model = new MMD.Parser.parse(arrayBuffer)
+# model = new MMD.ModelParser.parse(arrayBuffer)
 # ```
-class MMD.Parser
+class MMD.ModelParser
   # An utility function to parse.
   @parse: (args...) ->
     new this(args...).parse()

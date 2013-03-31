@@ -1,7 +1,7 @@
 # Control parsed model data and THREE.js.
 #
 # ```
-# model = MMD.Parser.parse(arrayBuffer)
+# model = MMD.ModelParser.parse(arrayBuffer)
 # new MMD.Renderer(model).render()
 # ```
 class MMD.Renderer
@@ -9,7 +9,7 @@ class MMD.Renderer
   # Prepare objects to render 3D world.
   #
   # ```
-  # @model - an Object parsed by Parser.
+  # @model - an Object parsed by ModelParser.
   # ```
   constructor: (@model) ->
     @width    = window.innerWidth

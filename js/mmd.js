@@ -6,7 +6,7 @@
       var _this = this;
       return this.Loader.load(url, function(arrayBuffer) {
         var model;
-        model = _this.Parser.parse(arrayBuffer);
+        model = _this.ModelParser.parse(arrayBuffer);
         return new _this.Renderer(model).render();
       });
     }
@@ -49,9 +49,9 @@
 
   })();
 
-  MMD.Parser = (function() {
+  MMD.ModelParser = (function() {
 
-    Parser.parse = function() {
+    ModelParser.parse = function() {
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return (function(func, args, ctor) {
@@ -61,7 +61,7 @@
       })(this, args, function() {}).parse();
     };
 
-    function Parser(arrayBuffer) {
+    function ModelParser(arrayBuffer) {
       this.dataView = new DataView(arrayBuffer);
       this.index = 0;
       this.model = {};
@@ -69,7 +69,7 @@
       this.pmx = {};
     }
 
-    Parser.prototype.parse = function() {
+    ModelParser.prototype.parse = function() {
       this.pmx.name = this.string(4);
       this.pmx.version = this.float();
       this.options.headerSize = this.uint8();
@@ -97,41 +97,41 @@
       return this.model;
     };
 
-    Parser.prototype.int8 = function() {
+    ModelParser.prototype.int8 = function() {
       this.index += 1;
       return this.dataView.getInt8(this.index - 1, true);
     };
 
-    Parser.prototype.int16 = function() {
+    ModelParser.prototype.int16 = function() {
       this.index += 2;
       return this.dataView.getInt16(this.index - 2, true);
     };
 
-    Parser.prototype.int32 = function() {
+    ModelParser.prototype.int32 = function() {
       this.index += 4;
       return this.dataView.getInt32(this.index - 4, true);
     };
 
-    Parser.prototype.uint8 = function() {
+    ModelParser.prototype.uint8 = function() {
       this.index += 1;
       return this.dataView.getUint8(this.index - 1, true);
     };
 
-    Parser.prototype.uint16 = function() {
+    ModelParser.prototype.uint16 = function() {
       this.index += 2;
       return this.dataView.getUint16(this.index - 2, true);
     };
 
-    Parser.prototype.float = function() {
+    ModelParser.prototype.float = function() {
       this.index += 4;
       return this.dataView.getFloat32(this.index - 4, true);
     };
 
-    Parser.prototype.char = function() {
+    ModelParser.prototype.char = function() {
       return String.fromCharCode(this.uint8());
     };
 
-    Parser.prototype.chars = function(size) {
+    ModelParser.prototype.chars = function(size) {
       var _i, _results;
       _results = [];
       for (_i = 0; 0 <= size ? _i < size : _i > size; 0 <= size ? _i++ : _i--) {
@@ -140,11 +140,11 @@
       return _results;
     };
 
-    Parser.prototype.string = function(size) {
+    ModelParser.prototype.string = function(size) {
       return this.chars(size).join('');
     };
 
-    Parser.prototype.bytes = function(size) {
+    ModelParser.prototype.bytes = function(size) {
       var _i, _ref, _results;
       _results = [];
       for (_i = 0, _ref = this.int32(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
@@ -153,7 +153,7 @@
       return _results;
     };
 
-    Parser.prototype.text = function() {
+    ModelParser.prototype.text = function() {
       var bytes, codes, i;
       bytes = this.bytes();
       codes = (function() {
@@ -167,7 +167,7 @@
       return String.fromCharCode.apply(null, codes);
     };
 
-    Parser.prototype.xyz = function() {
+    ModelParser.prototype.xyz = function() {
       return {
         x: this.float(),
         y: this.float(),
@@ -175,7 +175,7 @@
       };
     };
 
-    Parser.prototype.xyzw = function() {
+    ModelParser.prototype.xyzw = function() {
       return {
         x: this.float(),
         y: this.float(),
@@ -184,14 +184,14 @@
       };
     };
 
-    Parser.prototype.uv = function() {
+    ModelParser.prototype.uv = function() {
       return {
         u: this.float(),
         v: this.float()
       };
     };
 
-    Parser.prototype.rgb = function() {
+    ModelParser.prototype.rgb = function() {
       return {
         r: this.float(),
         g: this.float(),
@@ -199,7 +199,7 @@
       };
     };
 
-    Parser.prototype.rgba = function() {
+    ModelParser.prototype.rgba = function() {
       return {
         r: this.float(),
         g: this.float(),
@@ -208,7 +208,7 @@
       };
     };
 
-    Parser.prototype.vertexIndex = function() {
+    ModelParser.prototype.vertexIndex = function() {
       switch (this.options.vertexIndexSize) {
         case 1:
           return this.uint8();
@@ -219,7 +219,7 @@
       }
     };
 
-    Parser.prototype.boneIndex = function() {
+    ModelParser.prototype.boneIndex = function() {
       switch (this.options.boneIndexSize) {
         case 1:
           return this.int8();
@@ -230,7 +230,7 @@
       }
     };
 
-    Parser.prototype.textureIndex = function() {
+    ModelParser.prototype.textureIndex = function() {
       switch (this.options.textureIndexSize) {
         case 1:
           return this.int8();
@@ -241,7 +241,7 @@
       }
     };
 
-    Parser.prototype.materialIndex = function() {
+    ModelParser.prototype.materialIndex = function() {
       switch (this.options.materialIndexSize) {
         case 1:
           return this.int8();
@@ -252,7 +252,7 @@
       }
     };
 
-    Parser.prototype.morphIndex = function() {
+    ModelParser.prototype.morphIndex = function() {
       switch (this.options.morphIndexSize) {
         case 1:
           return this.int8();
@@ -263,7 +263,7 @@
       }
     };
 
-    Parser.prototype.rigidIndex = function() {
+    ModelParser.prototype.rigidIndex = function() {
       switch (this.options.rigidIndexSize) {
         case 1:
           return this.int8();
@@ -274,7 +274,7 @@
       }
     };
 
-    Parser.prototype.arrayOf = function(dataType, interval) {
+    ModelParser.prototype.arrayOf = function(dataType, interval) {
       var _i, _ref, _results;
       if (interval == null) interval = 1;
       _results = [];
@@ -284,7 +284,7 @@
       return _results;
     };
 
-    Parser.prototype.vertex = function() {
+    ModelParser.prototype.vertex = function() {
       return {
         position: this.xyz(),
         normal: this.xyz(),
@@ -295,7 +295,7 @@
       };
     };
 
-    Parser.prototype.vertexExtraUvs = function() {
+    ModelParser.prototype.vertexExtraUvs = function() {
       var _i, _ref, _results;
       _results = [];
       for (_i = 0, _ref = this.options.extraUvSize; 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
@@ -304,11 +304,11 @@
       return _results;
     };
 
-    Parser.prototype.vertexExtraUv = function() {
+    ModelParser.prototype.vertexExtraUv = function() {
       return this.xyzw();
     };
 
-    Parser.prototype.vertexWeight = function() {
+    ModelParser.prototype.vertexWeight = function() {
       switch (this.vertexWeightType()) {
         case 0:
           return this.vertexWeightBdef1();
@@ -321,59 +321,59 @@
       }
     };
 
-    Parser.prototype.vertexWeightType = function() {
+    ModelParser.prototype.vertexWeightType = function() {
       return this.uint8();
     };
 
-    Parser.prototype.vertexWeightBdef1 = function() {
+    ModelParser.prototype.vertexWeightBdef1 = function() {
       return this.boneIndex();
     };
 
-    Parser.prototype.vertexWeightBdef2 = function() {
+    ModelParser.prototype.vertexWeightBdef2 = function() {
       return [this.boneIndex(), this.boneIndex(), this.vertexWeightRate()];
     };
 
-    Parser.prototype.vertexWeightBdef4 = function() {
+    ModelParser.prototype.vertexWeightBdef4 = function() {
       return [this.boneIndex(), this.boneIndex(), this.boneIndex(), this.boneIndex(), this.vertexWeightRate(), this.vertexWeightRate(), this.vertexWeightRate(), this.vertexWeightRate()];
     };
 
-    Parser.prototype.vertexWeightSdef = function() {
+    ModelParser.prototype.vertexWeightSdef = function() {
       return [this.boneIndex(), this.boneIndex(), this.vertexWeightRate(), this.vertexWeightCVector(), this.vertexWeightR0Vector(), this.vertexWeightR1Vector()];
     };
 
-    Parser.prototype.vertexWeightCVector = function() {
+    ModelParser.prototype.vertexWeightCVector = function() {
       return this.xyz();
     };
 
-    Parser.prototype.vertexWeightR0Vector = function() {
+    ModelParser.prototype.vertexWeightR0Vector = function() {
       return this.xyz();
     };
 
-    Parser.prototype.vertexWeightR1Vector = function() {
+    ModelParser.prototype.vertexWeightR1Vector = function() {
       return this.xyz();
     };
 
-    Parser.prototype.vertexWeightRate = function() {
+    ModelParser.prototype.vertexWeightRate = function() {
       return this.float();
     };
 
-    Parser.prototype.vertexEdgeRate = function() {
+    ModelParser.prototype.vertexEdgeRate = function() {
       return this.float();
     };
 
-    Parser.prototype.face = function() {
+    ModelParser.prototype.face = function() {
       return [this.vertexIndex(), this.vertexIndex(), this.vertexIndex()];
     };
 
-    Parser.prototype.texture = function() {
+    ModelParser.prototype.texture = function() {
       return this.texturePath();
     };
 
-    Parser.prototype.texturePath = function() {
+    ModelParser.prototype.texturePath = function() {
       return this.text();
     };
 
-    Parser.prototype.material = function() {
+    ModelParser.prototype.material = function() {
       return {
         name: this.text(),
         nameEnglish: this.text(),
@@ -393,7 +393,7 @@
       };
     };
 
-    Parser.prototype.materialToonTexture = function() {
+    ModelParser.prototype.materialToonTexture = function() {
       switch (this.uint8()) {
         case 0:
           return this.textureIndex();
@@ -402,7 +402,7 @@
       }
     };
 
-    Parser.prototype.bone = function() {
+    ModelParser.prototype.bone = function() {
       var flags, object;
       object = {};
       object.name = this.text();
@@ -429,7 +429,7 @@
       return object;
     };
 
-    Parser.prototype.boneFlags = function() {
+    ModelParser.prototype.boneFlags = function() {
       var bits;
       bits = this.uint16();
       return {
@@ -448,7 +448,7 @@
       };
     };
 
-    Parser.prototype.boneLinks = function() {
+    ModelParser.prototype.boneLinks = function() {
       var _i, _ref, _results;
       _results = [];
       for (_i = 0, _ref = this.int32(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
@@ -457,7 +457,7 @@
       return _results;
     };
 
-    Parser.prototype.boneLink = function() {
+    ModelParser.prototype.boneLink = function() {
       var bone, limited;
       bone = this.boneIndex();
       limited = this.uint8();
@@ -468,7 +468,7 @@
       };
     };
 
-    Parser.prototype.morph = function() {
+    ModelParser.prototype.morph = function() {
       var object;
       object = {};
       object.name = this.text();
@@ -486,7 +486,7 @@
       return object;
     };
 
-    Parser.prototype.morphRecord = function(type) {
+    ModelParser.prototype.morphRecord = function(type) {
       switch (type) {
         case 0:
           return this.morphRecordGroup();
@@ -509,21 +509,21 @@
       }
     };
 
-    Parser.prototype.morphRecordVertex = function() {
+    ModelParser.prototype.morphRecordVertex = function() {
       return {
         index: this.vertexIndex(),
         offset: this.xyz()
       };
     };
 
-    Parser.prototype.morphRecordUv = function() {
+    ModelParser.prototype.morphRecordUv = function() {
       return {
         index: this.vertexIndex(),
         offset: this.xyzw()
       };
     };
 
-    Parser.prototype.morphRecordBone = function() {
+    ModelParser.prototype.morphRecordBone = function() {
       return {
         index: this.boneIndex(),
         translation: this.xyz(),
@@ -531,7 +531,7 @@
       };
     };
 
-    Parser.prototype.morphRecordMaterial = function() {
+    ModelParser.prototype.morphRecordMaterial = function() {
       return {
         index: this.materialIndex(),
         calculationType: this.uint8(),
@@ -547,14 +547,14 @@
       };
     };
 
-    Parser.prototype.morphRecordGroup = function() {
+    ModelParser.prototype.morphRecordGroup = function() {
       return {
         index: this.morphIndex(),
         rate: this.float()
       };
     };
 
-    Parser.prototype.frame = function() {
+    ModelParser.prototype.frame = function() {
       return {
         name: this.text(),
         nameEnglish: this.text(),
@@ -563,7 +563,7 @@
       };
     };
 
-    Parser.prototype.frameElements = function() {
+    ModelParser.prototype.frameElements = function() {
       var _i, _ref, _results;
       _results = [];
       for (_i = 0, _ref = this.int32(); 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
@@ -572,7 +572,7 @@
       return _results;
     };
 
-    Parser.prototype.frameElement = function() {
+    ModelParser.prototype.frameElement = function() {
       if (this.uint8()) {
         return this.morphIndex();
       } else {
@@ -580,7 +580,7 @@
       }
     };
 
-    Parser.prototype.rigid = function() {
+    ModelParser.prototype.rigid = function() {
       return {
         name: this.text(),
         nameEnglish: this.text(),
@@ -600,7 +600,7 @@
       };
     };
 
-    Parser.prototype.joint = function() {
+    ModelParser.prototype.joint = function() {
       return {
         name: this.text(),
         nameEnglish: this.text(),
@@ -618,7 +618,7 @@
       };
     };
 
-    return Parser;
+    return ModelParser;
 
   })();
 
