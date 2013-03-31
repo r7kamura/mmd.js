@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>motion_parser.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="index.html">
+                index.coffee
+              </a>
+            
+              
+              <a class="source" href="mmd.html">
+                mmd.coffee
+              </a>
+            
+              
+              <a class="source" href="loader.html">
+                loader.coffee
+              </a>
+            
+              
+              <a class="source" href="model_parser.html">
+                model_parser.coffee
+              </a>
+            
+              
+              <a class="source" href="motion_parser.html">
+                motion_parser.coffee
+              </a>
+            
+              
+              <a class="source" href="renderer.html">
+                renderer.coffee
+              </a>
+            
+              
+              <a class="source" href="sjis.html">
+                sjis.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>motion_parser.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Parse arrayBuffer as motion data in VMD format by Recursive Descendent Parsing style.</p>
+<h3>data type</h3>
+<p>The VMD format is binary data,
+and it consists of an series of int8, int16, int32, uint8, uint16, and float32.</p>
+<h3>encoding</h3>
+<p>The string in PMX format is encoded as UTF8 or UTF16LE.
+Authors of PMX data can select one of them, and it is stored in the header segment.</p>
+<h3>example</h3>
+<pre><code>motion = new MMD.MotionParser.parse(arrayBuffer)</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">MMD</span>.<span class="title">MotionParser</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>An utility function to parse.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="property">@parse</span>: (args...) -&gt;
+    <span class="keyword">new</span> <span class="keyword">this</span>(args...).parse()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>The constructor.</p>
+<pre><code>arrayBuffer - ArrayBuffer of binary model data
+@dataView   - DataView object to read ArrayBuffer
+@index      - Integer of a position for DataView</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  constructor: (arrayBuffer) -&gt;
+    <span class="property">@dataView</span> = <span class="keyword">new</span> DataView(arrayBuffer)
+    <span class="property">@index</span>    = <span class="number">0</span>
+    <span class="property">@options</span>  = {}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Parse motion data and return a parsed data object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  parse: -&gt;
+    name1: <span class="property">@string</span>(<span class="number">30</span>)
+    name2: <span class="property">@text</span>(<span class="number">20</span>)
+    frames: (<span class="property">@frame</span>() <span class="keyword">for</span> [<span class="number">0.</span>..<span class="property">@uint32</span>()])</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Consume 8bit as signed int.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  int8: () -&gt;
+    <span class="property">@index</span> += <span class="number">1</span>
+    <span class="property">@dataView</span>.getInt8(<span class="property">@index</span> - <span class="number">1</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Consume 16bit as signed int.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  int16: () -&gt;
+    <span class="property">@index</span> += <span class="number">2</span>
+    <span class="property">@dataView</span>.getInt16(<span class="property">@index</span> - <span class="number">2</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Consume 32bit as signed int.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  int32: () -&gt;
+    <span class="property">@index</span> += <span class="number">4</span>
+    <span class="property">@dataView</span>.getInt32(<span class="property">@index</span> - <span class="number">4</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Consume 8bit as unsigned int.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  uint8: () -&gt;
+    <span class="property">@index</span> += <span class="number">1</span>
+    <span class="property">@dataView</span>.getUint8(<span class="property">@index</span> - <span class="number">1</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Consume 16bit as unsigned int.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  uint16: () -&gt;
+    <span class="property">@index</span> += <span class="number">2</span>
+    <span class="property">@dataView</span>.getUint16(<span class="property">@index</span> - <span class="number">2</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Consume 16bit as unsigned int.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  uint32: () -&gt;
+    <span class="property">@index</span> += <span class="number">4</span>
+    <span class="property">@dataView</span>.getUint16(<span class="property">@index</span> - <span class="number">4</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Consume 32bit as float.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  float: () -&gt;
+    <span class="property">@index</span> += <span class="number">4</span>
+    <span class="property">@dataView</span>.getFloat32(<span class="property">@index</span> - <span class="number">4</span>, <span class="literal">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Consume 8bit and return a String as ASCII character.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  char: ()-&gt;
+    String.fromCharCode(<span class="property">@uint8</span>())</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Return characters with a given size.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  chars: (size) -&gt;
+    <span class="property">@char</span>() <span class="keyword">for</span> [<span class="number">0.</span>..size]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Return characters as a String with a given size.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  string: (size) -&gt;
+    <span class="property">@chars</span>(size).join(<span class="string">''</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Return an Array of uint8 with a given size.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  bytes: (size) -&gt;
+    <span class="property">@uint8</span>() <span class="keyword">for</span> [<span class="number">0.</span>..size]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Read a text block.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  text: (size) -&gt;
+    bytes = <span class="property">@bytes</span>(size)
+    codes = (bytes[i] + bytes[i + <span class="number">1</span>] * <span class="number">256</span> <span class="keyword">for</span> i <span class="keyword">in</span> [<span class="number">0.</span>..bytes.length] <span class="keyword">by</span> <span class="number">2</span>)
+    String.fromCharCode.apply(<span class="literal">null</span>, codes)
+
+  xyz: -&gt;
+    x: <span class="property">@float</span>()
+    y: <span class="property">@float</span>()
+    z: <span class="property">@float</span>()
+
+  xyzw: -&gt;
+    x: <span class="property">@float</span>()
+    y: <span class="property">@float</span>()
+    z: <span class="property">@float</span>()
+    w: <span class="property">@float</span>()
+
+  uv: -&gt;
+    u: <span class="property">@float</span>()
+    v: <span class="property">@float</span>()
+
+  rgb: -&gt;
+    r: <span class="property">@float</span>()
+    g: <span class="property">@float</span>()
+    b: <span class="property">@float</span>()
+
+  rgba: -&gt;
+    r: <span class="property">@float</span>()
+    g: <span class="property">@float</span>()
+    b: <span class="property">@float</span>()
+    a: <span class="property">@float</span>()
+
+  frame: -&gt;
+    name: <span class="property">@string</span>(<span class="number">15</span>)
+    index: <span class="property">@uint32</span>()
+    position: <span class="property">@xyz</span>()
+    quaternion: <span class="property">@xyzw</span>()
+    interporation: <span class="property">@chars</span>(<span class="number">64</span>)</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

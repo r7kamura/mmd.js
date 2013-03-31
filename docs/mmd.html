@@ -39,8 +39,18 @@
               </a>
             
               
+              <a class="source" href="motion_parser.html">
+                motion_parser.coffee
+              </a>
+            
+              
               <a class="source" href="renderer.html">
                 renderer.coffee
+              </a>
+            
+              
+              <a class="source" href="sjis.html">
+                sjis.coffee
               </a>
             
           </div>
@@ -72,7 +82,12 @@
   render: (url) -&gt;
     <span class="property">@Loader</span>.load url, (arrayBuffer) =&gt;
       model = <span class="property">@ModelParser</span>.parse(arrayBuffer)
-      <span class="keyword">new</span> <span class="property">@Renderer</span>(model).render()</pre></div></div>
+      <span class="keyword">new</span> <span class="property">@Renderer</span>(model).render()
+
+  loadMotion: (url) -&gt;
+    <span class="property">@Loader</span>.load url, (arrayBuffer) =&gt;
+      motion = <span class="property">@MotionParser</span>.parse(arrayBuffer)
+      console.log(motion)</pre></div></div>
             
         </li>
         
