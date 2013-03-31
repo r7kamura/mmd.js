@@ -80,10 +80,6 @@ class MMD.MotionParser
     z: @float()
     w: @float()
 
-  uv: ->
-    u: @float()
-    v: @float()
-
   rgb: ->
     r: @float()
     g: @float()

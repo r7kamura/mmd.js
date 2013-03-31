@@ -726,13 +726,6 @@
       };
     };
 
-    MotionParser.prototype.uv = function() {
-      return {
-        u: this.float(),
-        v: this.float()
-      };
-    };
-
     MotionParser.prototype.rgb = function() {
       return {
         r: this.float(),
