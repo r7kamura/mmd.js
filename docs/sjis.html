@@ -75,19 +75,6 @@
               </div>
               <p>Convert an Array of Shift JIS code to a String in JavaScript.</p>
 <p>Code convertion table is from here:<br><a href="http://www.din.or.jp/~itoh01/Usage/XJIS_CodeTable.htm">http://www.din.or.jp/~itoh01/Usage/XJIS_CodeTable.htm</a></p>
-<pre><code>Sjis.fromArrayToString([
-  0x82,
-  0xB1,
-  0x82,
-  0xF1,
-  0x82,
-  0xC9,
-  0x82,
-  0xBF,
-  0x82,
-  0xCD,
-])
-#=&gt; &quot;こんにちは&quot;</code></pre>
 
             </div>
             
@@ -103,11 +90,19 @@
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
               <p>Take an Array of Shift JIS codes and return a String.</p>
-<ol>
-<li>Check up 1 code against single byte SJIS table</li>
-<li>Check up 2 code against double byte SJIS table</li>
-<li>Break up there</li>
-</ol>
+<pre><code>Sjis.fromArrayToString([
+  130,
+  177,
+  130,
+  241,
+  130,
+  201,
+  130,
+  191,
+  130,
+  205,
+])
+#=&gt; &quot;こんにちは&quot;</code></pre>
 
             </div>
             
@@ -115,12 +110,12 @@
     i = <span class="number">0</span>
     chars = []
     <span class="keyword">while</span> code = codes[i++]
-      <span class="keyword">if</span> <span class="property">@singleByteTable</span>.hasOwnProperty(code)
-        chars.push(<span class="property">@singleByteTable</span>[code])
+      <span class="keyword">if</span> <span class="property">@getTableFromSingleByteToString</span>().hasOwnProperty(code)
+        chars.push(<span class="property">@getTableFromSingleByteToString</span>()[code])
       <span class="keyword">else</span>
         code = (code &lt;&lt; <span class="number">8</span>) + codes[i++]
-        <span class="keyword">if</span> <span class="property">@doubleByteTable</span>.hasOwnProperty(code)
-          chars.push(<span class="property">@doubleByteTable</span>[code])
+        <span class="keyword">if</span> <span class="property">@getTableFromDoubleByteToString</span>().hasOwnProperty(code)
+          chars.push(<span class="property">@getTableFromDoubleByteToString</span>()[code])
         <span class="keyword">else</span>
           <span class="keyword">break</span>
     chars.join(<span class="string">''</span>)</pre></div></div>
@@ -134,11 +129,100 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
+              <p>Take a String and return an Array of Shift JIS codes.</p>
+<pre><code>Sjis.fromStringToArray(&quot;こんにちは&quot;)
+#=&gt; [130, 177, 130, 241, 130, 201, 130, 191, 130, 205]</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  fromStringToArray: (string) -&gt;
+    codes = []
+    <span class="keyword">for</span> char <span class="keyword">in</span> string.split(<span class="string">''</span>)
+      <span class="keyword">if</span> <span class="property">@getTableFromStringToSingleByte</span>().hasOwnProperty(char)
+        codes.push(<span class="property">@getTableFromStringToSingleByte</span>()[char])
+      <span class="keyword">else</span> <span class="keyword">if</span> <span class="property">@getTableFromStringToDoubleByte</span>().hasOwnProperty(char)
+        code = <span class="property">@getTableFromStringToDoubleByte</span>()[char]
+        codes.push(code &gt;&gt; <span class="number">8</span>)
+        codes.push(code &amp; <span class="number">0xff</span>)
+      <span class="keyword">else</span>
+        <span class="keyword">break</span>
+    codes</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Use <code>getTableXxx</code> functions to get tables to standardize interfaces.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  getTableFromSingleByteToString: -&gt;
+    <span class="property">@tableFromSingleByteToString</span>
+
+  getTableFromDoubleByteToString: -&gt;
+    <span class="property">@tableFromDoubleByteToString</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>The conversion table from string is evaluated lazily to speed things up if unnecessary.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  getTableFromStringToSingleByte: -&gt;
+    <span class="property">@tableFromStringToSingleByte</span> ||= <span class="property">@createTableFromStringToSingleByte</span>()
+
+  getTableFromStringToDoubleByte: -&gt;
+    <span class="property">@tableFromStringToDoubleByte</span> ||= <span class="property">@createTableFromStringToDoubleByte</span>()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Create an inverse table of original one.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  createTableFromStringToSingleByte: -&gt;
+    table = {}
+    table[char] = byte <span class="keyword">for</span> byte, char <span class="keyword">of</span> <span class="property">@tableFromSingleByteToString</span>
+    table
+
+  createTableFromStringToDoubleByte: -&gt;
+    table = {}
+    table[char] = byte <span class="keyword">for</span> byte, char <span class="keyword">of</span> <span class="property">@tableFromDoubleByteToString</span>
+    table</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
               <p>Conversion table from single byte to string.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  singleByteTable:
+            <div class="content"><div class='highlight'><pre>  tableFromSingleByteToString:
     <span class="number">0x20</span>: <span class="string">" "</span>
     <span class="number">0x21</span>: <span class="string">"!"</span>
     <span class="number">0x22</span>: <span class="string">"\""</span>
@@ -301,17 +385,17 @@
         </li>
         
         
-        <li id="section-4">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Conversion table from double byte to string.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  doubleByteTable:
+            <div class="content"><div class='highlight'><pre>  tableFromDoubleByteToString:
     <span class="number">0x8140</span>: <span class="string">"　"</span>
     <span class="number">0x8141</span>: <span class="string">"、"</span>
     <span class="number">0x8142</span>: <span class="string">"。"</span>

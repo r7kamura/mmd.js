@@ -2,44 +2,84 @@
 #
 # Code convertion table is from here:  
 # http://www.din.or.jp/~itoh01/Usage/XJIS_CodeTable.htm
-#
-# ```
-# Sjis.fromArrayToString([
-#   0x82,
-#   0xB1,
-#   0x82,
-#   0xF1,
-#   0x82,
-#   0xC9,
-#   0x82,
-#   0xBF,
-#   0x82,
-#   0xCD,
-# ])
-# #=> "こんにちは"
-# ```
 this.Sjis =
   # Take an Array of Shift JIS codes and return a String.
   #
-  # 1. Check up 1 code against single byte SJIS table
-  # 2. Check up 2 code against double byte SJIS table
-  # 3. Break up there
+  # ```
+  # Sjis.fromArrayToString([
+  #   130,
+  #   177,
+  #   130,
+  #   241,
+  #   130,
+  #   201,
+  #   130,
+  #   191,
+  #   130,
+  #   205,
+  # ])
+  # #=> "こんにちは"
+  # ```
   fromArrayToString: (codes) ->
     i = 0
     chars = []
     while code = codes[i++]
-      if @singleByteTable.hasOwnProperty(code)
-        chars.push(@singleByteTable[code])
+      if @getTableFromSingleByteToString().hasOwnProperty(code)
+        chars.push(@getTableFromSingleByteToString()[code])
       else
         code = (code << 8) + codes[i++]
-        if @doubleByteTable.hasOwnProperty(code)
-          chars.push(@doubleByteTable[code])
+        if @getTableFromDoubleByteToString().hasOwnProperty(code)
+          chars.push(@getTableFromDoubleByteToString()[code])
         else
           break
     chars.join('')
 
+  # Take a String and return an Array of Shift JIS codes.
+  #
+  # ```
+  # Sjis.fromStringToArray("こんにちは")
+  # #=> [130, 177, 130, 241, 130, 201, 130, 191, 130, 205]
+  # ```
+  fromStringToArray: (string) ->
+    codes = []
+    for char in string.split('')
+      if @getTableFromStringToSingleByte().hasOwnProperty(char)
+        codes.push(@getTableFromStringToSingleByte()[char])
+      else if @getTableFromStringToDoubleByte().hasOwnProperty(char)
+        code = @getTableFromStringToDoubleByte()[char]
+        codes.push(code >> 8)
+        codes.push(code & 0xff)
+      else
+        break
+    codes
+
+  # Use `getTableXxx` functions to get tables to standardize interfaces.
+  getTableFromSingleByteToString: ->
+    @tableFromSingleByteToString
+
+  getTableFromDoubleByteToString: ->
+    @tableFromDoubleByteToString
+
+  # The conversion table from string is evaluated lazily to speed things up if unnecessary.
+  getTableFromStringToSingleByte: ->
+    @tableFromStringToSingleByte ||= @createTableFromStringToSingleByte()
+
+  getTableFromStringToDoubleByte: ->
+    @tableFromStringToDoubleByte ||= @createTableFromStringToDoubleByte()
+
+  # Create an inverse table of original one.
+  createTableFromStringToSingleByte: ->
+    table = {}
+    table[char] = byte for byte, char of @tableFromSingleByteToString
+    table
+
+  createTableFromStringToDoubleByte: ->
+    table = {}
+    table[char] = byte for byte, char of @tableFromDoubleByteToString
+    table
+
   # Conversion table from single byte to string.
-  singleByteTable:
+  tableFromSingleByteToString:
     0x20: " "
     0x21: "!"
     0x22: "\""
@@ -200,7 +240,7 @@ this.Sjis =
     0xdf: "ﾟ"
 
   # Conversion table from double byte to string.
-  doubleByteTable:
+  tableFromDoubleByteToString:
     0x8140: "　"
     0x8141: "、"
     0x8142: "。"
