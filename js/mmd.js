@@ -737,7 +737,7 @@
     MotionParser.prototype.bone = function() {
       return {
         name: this.text(15),
-        index: this.uint32(),
+        frame: this.uint32(),
         position: this.xyz(),
         quaternion: this.xyzw(),
         interporation: this.chars(64)

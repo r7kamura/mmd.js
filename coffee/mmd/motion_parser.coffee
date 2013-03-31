@@ -87,7 +87,7 @@ class MMD.MotionParser
 
   bone: ->
     name: @text(15)
-    index: @uint32()
+    frame: @uint32()
     position: @xyz()
     quaternion: @xyzw()
     interporation: @chars(64)
