@@ -1,28 +1,49 @@
 # Control parsed model data and THREE.js.
 #
 # ```
-# model = MMD.ModelParser.parse(arrayBuffer)
-# new MMD.Renderer(model).render()
+# model  = MMD.ModelParser.parse(modelArrayBuffer)
+# motion = MMD.MotionParser.parse(motionArrayBuffer)
+# MMD.Renderer.render(model, motion)
 # ```
 class MMD.Renderer
+  # Utility function to construct and render.
+  @render: (args...) ->
+    new this(args...).render
 
   # Prepare objects to render 3D world.
   #
   # ```
-  # @model - an Object parsed by ModelParser.
+  # @model  - an Object parsed by ModelParser.
+  # @motion - an Object parsed by MotionParser.
+  # @frame  - an Integer to count current frame number.
   # ```
-  constructor: (@model) ->
+  constructor: (@model, @motion) ->
     @width    = window.innerWidth
     @height   = window.innerHeight
     @renderer = @createRenderer()
     @scene    = @createScene()
     @camera   = @createCamera()
+    @bones    = @createBones()
+    @stats    = @createStats()
+    @frame    = 0
     @addFaces()
 
   # Put canvas object, and start rendering loop.
   render: ->
     document.body.appendChild(@renderer.domElement)
+    document.body.appendChild(@stats.domElement)
+    @animate()
+
+  # A function to be called in each frame.
+  animate: ->
+    window.requestAnimationFrame => @animate()
+    @stats.update()
     @renderer.render(@scene, @camera)
+    @incrementFrame()
+
+  # Increment @frame count.
+  incrementFrame: ->
+    @frame += 1
 
   # Create a renderer object required to render world.
   createRenderer: ->
@@ -50,7 +71,7 @@ class MMD.Renderer
   # Due to the performance reason, we don't render all of faces.
   # This is adjusted by the value `interval`.
   addFaces: ->
-    interval = 10
+    interval = 100
     for face in @model.faces by interval
       geometry = new THREE.Geometry()
       geometry.vertices = [
@@ -63,7 +84,7 @@ class MMD.Renderer
       mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial())
       @scene.add(mesh)
 
-  addBones: ->
+  createBones: ->
     for bone in @model.bones
       geometry        = new THREE.SphereGeometry(0.1)
       material        = new THREE.MeshNormalMaterial()
@@ -71,12 +92,13 @@ class MMD.Renderer
       mesh.position.x = bone.position.x
       mesh.position.y = bone.position.y
       mesh.position.z = bone.position.z
-      @scene.add(mesh)
+      mesh
 
-      if bone.destination != -1 && bone.flags.specifiedByIndex
-        material = new THREE.LineBasicMaterial(color: 0xff0000)
-        geometry = new THREE.Geometry()
-        geometry.vertices.push(bone.position)
-        geometry.vertices.push(@model.bones[bone.destination].position)
-        mesh = new THREE.Line(geometry, material)
-        @scene.add(mesh)
+  getTableFromBoneNameToBone: ->
+    @tableFromBoneNameToBone ||= do =>
+      table = {}
+      table[bone.name] = bone for bone in @model.bones
+      table
+
+  createStats: ->
+    new Stats()

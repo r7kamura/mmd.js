@@ -53,3 +53,4 @@ mmd.js
 ## Dependencies
 * https://github.com/mrdoob/three.js
 * https://github.com/r7kamura/sjis.js
+* https://github.com/mrdoob/stats.js

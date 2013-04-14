@@ -69,8 +69,9 @@
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
               <p>Control parsed model data and THREE.js.</p>
-<pre><code>model = MMD.ModelParser.parse(arrayBuffer)
-new MMD.Renderer(model).render()</code></pre>
+<pre><code>model  = MMD.ModelParser.parse(modelArrayBuffer)
+motion = MMD.MotionParser.parse(motionArrayBuffer)
+MMD.Renderer.render(model, motion)</code></pre>
 
             </div>
             
@@ -85,18 +86,12 @@ new MMD.Renderer(model).render()</code></pre>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Prepare objects to render 3D world.</p>
-<pre><code>@model - an Object parsed by ModelParser.</code></pre>
+              <p>Utility function to construct and render.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  constructor: (<span class="property">@model</span>) -&gt;
-    <span class="property">@width</span>    = window.innerWidth
-    <span class="property">@height</span>   = window.innerHeight
-    <span class="property">@renderer</span> = <span class="property">@createRenderer</span>()
-    <span class="property">@scene</span>    = <span class="property">@createScene</span>()
-    <span class="property">@camera</span>   = <span class="property">@createCamera</span>()
-    <span class="property">@addFaces</span>()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="property">@render</span>: (args...) -&gt;
+    <span class="keyword">new</span> <span class="keyword">this</span>(args...).render</pre></div></div>
             
         </li>
         
@@ -107,13 +102,23 @@ new MMD.Renderer(model).render()</code></pre>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Put canvas object, and start rendering loop.</p>
+              <p>Prepare objects to render 3D world.</p>
+<pre><code>@model  - an Object parsed by ModelParser.
+@motion - an Object parsed by MotionParser.
+@frame  - an Integer to count current frame number.</code></pre>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  render: -&gt;
-    document.body.appendChild(<span class="property">@renderer</span>.domElement)
-    <span class="property">@renderer</span>.render(<span class="property">@scene</span>, <span class="property">@camera</span>)</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  constructor: (<span class="property">@model</span>, <span class="property">@motion</span>) -&gt;
+    <span class="property">@width</span>    = window.innerWidth
+    <span class="property">@height</span>   = window.innerHeight
+    <span class="property">@renderer</span> = <span class="property">@createRenderer</span>()
+    <span class="property">@scene</span>    = <span class="property">@createScene</span>()
+    <span class="property">@camera</span>   = <span class="property">@createCamera</span>()
+    <span class="property">@bones</span>    = <span class="property">@createBones</span>()
+    <span class="property">@stats</span>    = <span class="property">@createStats</span>()
+    <span class="property">@frame</span>    = <span class="number">0</span>
+    <span class="property">@addFaces</span>()</pre></div></div>
             
         </li>
         
@@ -123,6 +128,59 @@ new MMD.Renderer(model).render()</code></pre>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Put canvas object, and start rendering loop.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  render: -&gt;
+    document.body.appendChild(<span class="property">@renderer</span>.domElement)
+    document.body.appendChild(<span class="property">@stats</span>.domElement)
+    <span class="property">@animate</span>()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>A function to be called in each frame.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  animate: -&gt;
+    window.requestAnimationFrame =&gt; <span class="property">@animate</span>()
+    <span class="property">@stats</span>.update()
+    <span class="property">@renderer</span>.render(<span class="property">@scene</span>, <span class="property">@camera</span>)
+    <span class="property">@incrementFrame</span>()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Increment @frame count.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  incrementFrame: -&gt;
+    <span class="property">@frame</span> += <span class="number">1</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>Create a renderer object required to render world.</p>
 
@@ -136,11 +194,11 @@ new MMD.Renderer(model).render()</code></pre>
         </li>
         
         
-        <li id="section-5">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Create a scene object required to render world.</p>
 
@@ -152,11 +210,11 @@ new MMD.Renderer(model).render()</code></pre>
         </li>
         
         
-        <li id="section-6">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Create a camera object.</p>
 
@@ -176,11 +234,11 @@ new MMD.Renderer(model).render()</code></pre>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>Create faces of MMD model.
 Due to the performance reason, we don&#39;t render all of faces.
@@ -189,7 +247,7 @@ This is adjusted by the value <code>interval</code>.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  addFaces: -&gt;
-    interval = <span class="number">10</span>
+    interval = <span class="number">100</span>
     <span class="keyword">for</span> face <span class="keyword">in</span> <span class="property">@model</span>.faces <span class="keyword">by</span> interval
       geometry = <span class="keyword">new</span> THREE.Geometry()
       geometry.vertices = [
@@ -202,7 +260,7 @@ This is adjusted by the value <code>interval</code>.</p>
       mesh = <span class="keyword">new</span> THREE.Mesh(geometry, <span class="keyword">new</span> THREE.MeshNormalMaterial())
       <span class="property">@scene</span>.add(mesh)
 
-  addBones: -&gt;
+  createBones: -&gt;
     <span class="keyword">for</span> bone <span class="keyword">in</span> <span class="property">@model</span>.bones
       geometry        = <span class="keyword">new</span> THREE.SphereGeometry(<span class="number">0.1</span>)
       material        = <span class="keyword">new</span> THREE.MeshNormalMaterial()
@@ -210,15 +268,16 @@ This is adjusted by the value <code>interval</code>.</p>
       mesh.position.x = bone.position.x
       mesh.position.y = bone.position.y
       mesh.position.z = bone.position.z
-      <span class="property">@scene</span>.add(mesh)
+      mesh
 
-      <span class="keyword">if</span> bone.destination != -<span class="number">1</span> &amp;&amp; bone.flags.specifiedByIndex
-        material = <span class="keyword">new</span> THREE.LineBasicMaterial(color: <span class="number">0xff0000</span>)
-        geometry = <span class="keyword">new</span> THREE.Geometry()
-        geometry.vertices.push(bone.position)
-        geometry.vertices.push(<span class="property">@model</span>.bones[bone.destination].position)
-        mesh = <span class="keyword">new</span> THREE.Line(geometry, material)
-        <span class="property">@scene</span>.add(mesh)</pre></div></div>
+  getTableFromBoneNameToBone: -&gt;
+    <span class="property">@tableFromBoneNameToBone</span> ||= <span class="keyword">do</span> =&gt;
+      table = {}
+      table[bone.name] = bone <span class="keyword">for</span> bone <span class="keyword">in</span> <span class="property">@model</span>.bones
+      table
+
+  createStats: -&gt;
+    <span class="keyword">new</span> Stats()</pre></div></div>
             
         </li>
         

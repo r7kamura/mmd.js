@@ -4,12 +4,11 @@
 # MMD.render('http://example.com/model.pmx')
 # ```
 this.MMD =
-  render: (url) ->
-    @Loader.load url, (arrayBuffer) =>
-      model = @ModelParser.parse(arrayBuffer)
-      new @Renderer(model).render()
-
-  loadMotion: (url) ->
-    @Loader.load url, (arrayBuffer) =>
-      motion = @MotionParser.parse(arrayBuffer)
-      console.log(motion)
+  render: (modelUrl, motionUrl) ->
+    @Loader.load modelUrl, (modelArrayBuffer) =>
+      @Loader.load motionUrl, (motionArrayBuffer) =>
+        model    = @ModelParser.parse(modelArrayBuffer)
+        motion   = @MotionParser.parse(motionArrayBuffer)
+        renderer = new @Renderer(model)
+        window.renderer = renderer
+        renderer.render()

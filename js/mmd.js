@@ -2,20 +2,17 @@
   var __slice = Array.prototype.slice;
 
   this.MMD = {
-    render: function(url) {
+    render: function(modelUrl, motionUrl) {
       var _this = this;
-      return this.Loader.load(url, function(arrayBuffer) {
-        var model;
-        model = _this.ModelParser.parse(arrayBuffer);
-        return new _this.Renderer(model).render();
-      });
-    },
-    loadMotion: function(url) {
-      var _this = this;
-      return this.Loader.load(url, function(arrayBuffer) {
-        var motion;
-        motion = _this.MotionParser.parse(arrayBuffer);
-        return console.log(motion);
+      return this.Loader.load(modelUrl, function(modelArrayBuffer) {
+        return _this.Loader.load(motionUrl, function(motionArrayBuffer) {
+          var model, motion, renderer;
+          model = _this.ModelParser.parse(modelArrayBuffer);
+          motion = _this.MotionParser.parse(motionArrayBuffer);
+          renderer = new _this.Renderer(model);
+          window.renderer = renderer;
+          return renderer.render();
+        });
       });
     }
   };
@@ -788,19 +785,44 @@
 
   MMD.Renderer = (function() {
 
-    function Renderer(model) {
+    Renderer.render = function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return new this.apply(null, args).render;
+    };
+
+    function Renderer(model, motion) {
       this.model = model;
+      this.motion = motion;
       this.width = window.innerWidth;
       this.height = window.innerHeight;
       this.renderer = this.createRenderer();
       this.scene = this.createScene();
       this.camera = this.createCamera();
+      this.bones = this.createBones();
+      this.stats = this.createStats();
+      this.frame = 0;
       this.addFaces();
     }
 
     Renderer.prototype.render = function() {
       document.body.appendChild(this.renderer.domElement);
-      return this.renderer.render(this.scene, this.camera);
+      document.body.appendChild(this.stats.domElement);
+      return this.animate();
+    };
+
+    Renderer.prototype.animate = function() {
+      var _this = this;
+      window.requestAnimationFrame(function() {
+        return _this.animate();
+      });
+      this.stats.update();
+      this.renderer.render(this.scene, this.camera);
+      return this.incrementFrame();
+    };
+
+    Renderer.prototype.incrementFrame = function() {
+      return this.frame += 1;
     };
 
     Renderer.prototype.createRenderer = function() {
@@ -835,7 +857,7 @@
 
     Renderer.prototype.addFaces = function() {
       var face, geometry, interval, mesh, _i, _len, _ref, _results, _step;
-      interval = 10;
+      interval = 100;
       _ref = this.model.faces;
       _results = [];
       for (_i = 0, _len = _ref.length, _step = interval; _i < _len; _i += _step) {
@@ -850,7 +872,7 @@
       return _results;
     };
 
-    Renderer.prototype.addBones = function() {
+    Renderer.prototype.createBones = function() {
       var bone, geometry, material, mesh, _i, _len, _ref, _results;
       _ref = this.model.bones;
       _results = [];
@@ -862,21 +884,27 @@
         mesh.position.x = bone.position.x;
         mesh.position.y = bone.position.y;
         mesh.position.z = bone.position.z;
-        this.scene.add(mesh);
-        if (bone.destination !== -1 && bone.flags.specifiedByIndex) {
-          material = new THREE.LineBasicMaterial({
-            color: 0xff0000
-          });
-          geometry = new THREE.Geometry();
-          geometry.vertices.push(bone.position);
-          geometry.vertices.push(this.model.bones[bone.destination].position);
-          mesh = new THREE.Line(geometry, material);
-          _results.push(this.scene.add(mesh));
-        } else {
-          _results.push(void 0);
-        }
+        _results.push(mesh);
       }
       return _results;
+    };
+
+    Renderer.prototype.getTableFromBoneNameToBone = function() {
+      var _this = this;
+      return this.tableFromBoneNameToBone || (this.tableFromBoneNameToBone = (function() {
+        var bone, table, _i, _len, _ref;
+        table = {};
+        _ref = _this.model.bones;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          bone = _ref[_i];
+          table[bone.name] = bone;
+        }
+        return table;
+      })());
+    };
+
+    Renderer.prototype.createStats = function() {
+      return new Stats();
     };
 
     return Renderer;
