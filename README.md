@@ -5,12 +5,12 @@
 mmd.js is a project to work MMD in a web browser with client-side JavaScript.
 
 ## Demo
-http://r7kamura.github.com/mmd.js/
+http://r7kamura.github.io/mmd.js/
 
 ## Development
 
 ### Documents
-http://r7kamura.github.com/mmd.js/docs/
+http://r7kamura.github.io/mmd.js/docs/
 
 ### Install
 ```
